@@ -23,7 +23,8 @@ This plugin converts markdown files into timeline visualizations within Obsidian
 
 Create a timeline by using a code block with the `timeline` language identifier:
 
-```timeline
+```markdown
+\```timeline
 # 1997
 ## 06-30 
 
@@ -49,11 +50,12 @@ Some edition.
 ### Title 0
 
 What is this?
+\```
 ```
 
 ## License
 
-MIT License - see LICENSE file for details
+MIT License - see [LICENSE](LICENSE) file for details
 
 ## Contributing
 
