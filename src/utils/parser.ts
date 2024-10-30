@@ -6,7 +6,7 @@ export function parseTimelineContent(content: string): TimelineEvent[] {
 
     sections.forEach(section => {
         const lines = section.trim().split('\n');
-        let currentEvent: Partial<TimelineEvent> = {};
+        const currentEvent: Partial<TimelineEvent> = {};
 
         lines.forEach(line => {
             line = line.trim();
@@ -26,9 +26,13 @@ export function parseTimelineContent(content: string): TimelineEvent[] {
         }
     });
 
+    // Sort events by date (newest first)
     return events.sort((a, b) => {
-        const yearDiff = parseInt(b.year) - parseInt(a.year);
-        if (yearDiff !== 0) return yearDiff;
-        return b.date.localeCompare(a.date);
+        // Convert to comparable dates
+        const dateA = new Date(`${a.year}-${a.date}`);
+        const dateB = new Date(`${b.year}-${b.date}`);
+        
+        // Sort in descending order (newest first)
+        return dateB.getTime() - dateA.getTime();
     });
 } 
