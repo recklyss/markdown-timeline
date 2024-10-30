@@ -36,7 +36,11 @@ export class TimelineView extends ItemView {
             
             const dateEl = eventEl.createEl("div", { cls: "timeline-date" });
             dateEl.createEl("span", { cls: "timeline-year", text: event.year });
-            dateEl.createEl("span", { cls: "timeline-month", text: event.date });
+            const displayDate = new Date(event.date).toLocaleDateString('en-US', {
+                month: 'short',
+                day: 'numeric'
+            });
+            dateEl.createEl("span", { cls: "timeline-month", text: displayDate });
             
             eventEl.createEl("div", { cls: "timeline-point" });
             
