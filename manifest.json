@@ -1,7 +1,7 @@
 {
-	"id": "timeline-plugin",
-	"name": "Timeline",
-	"version": "1.0.0",
+	"id": "markdown-timeline",
+	"name": "Markdown Timeline",
+	"version": "1.1.1",
 	"minAppVersion": "0.15.0",
 	"description": "Convert markdown into timeline visualization",
 	"author": "Jiaheng Zhang",

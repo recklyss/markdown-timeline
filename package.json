@@ -1,15 +1,17 @@
 {
-	"name": "obsidian-timeline",
-	"version": "1.0.0",
-	"description": "Convert markdown into timeline visualization which same with mdline format",
+	"name": "markdown-timeline",
+	"version": "1.1.1",
+	"description": "Convert markdown into timeline visualization",
 	"main": "main.js",
 	"scripts": {
 		"dev": "node esbuild.config.mjs",
+		"bump": "node version-bump.mjs && git add package.json manifest.json versions.json && npm run rlnotes",
+		"rlnotes": "git log $(git describe --tags --abbrev=0)..HEAD --oneline > release-notes.md && git add release-notes.md",
 		"build": "tsc -noEmit -skipLibCheck && node esbuild.config.mjs production",
 		"version": "node version-bump.mjs && git add manifest.json versions.json"
 	},
-	"keywords": ["obsidian", "timeline", "markdown"],
-	"author": "",
+	"keywords": ["obsidian", "timeline", "visualization"],
+	"author": "Jiaheng",
 	"license": "MIT",
 	"devDependencies": {
 		"@types/node": "^16.11.6",
