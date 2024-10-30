@@ -6,3 +6,75 @@ available in the app when your plugin is enabled.
 If your plugin does not need CSS, delete this file.
 
 */
+
+.timeline-container {
+    padding: 20px;
+    max-width: 800px;
+    margin: 0 auto;
+}
+
+.timeline {
+    position: relative;
+    padding: 20px 0;
+}
+
+.timeline::before {
+    content: '';
+    position: absolute;
+    left: 150px;
+    top: 0;
+    bottom: 0;
+    width: 2px;
+    background: var(--background-modifier-border);
+}
+
+.timeline-event {
+    position: relative;
+    margin-bottom: 30px;
+    padding-left: 170px;
+}
+
+.timeline-date {
+    position: absolute;
+    left: 0;
+    width: 130px;
+    text-align: right;
+}
+
+.timeline-year {
+    display: block;
+    font-weight: bold;
+    color: var(--text-muted);
+}
+
+.timeline-month {
+    display: block;
+    font-size: 0.9em;
+    color: var(--text-muted);
+}
+
+.timeline-point {
+    position: absolute;
+    left: 144px;
+    top: 15px;
+    width: 16px;
+    height: 16px;
+    border-radius: 50%;
+    background: var(--interactive-accent);
+}
+
+.timeline-content {
+    background: var(--background-primary-alt);
+    border-radius: 4px;
+    padding: 15px;
+}
+
+.timeline-content h3 {
+    margin: 0 0 10px 0;
+    color: var(--text-normal);
+}
+
+.timeline-content p {
+    margin: 0;
+    color: var(--text-muted);
+}
