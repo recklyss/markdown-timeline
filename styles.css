@@ -9,19 +9,21 @@ If your plugin does not need CSS, delete this file.
 
 .timeline-container {
     padding: 20px;
-    max-width: 800px;
-    margin: 0 auto;
+    max-width: 1000px;
+    margin: 0;
+    padding-left: 20px;
 }
 
 .timeline {
     position: relative;
     padding: 20px 0;
+    width: 80%;
 }
 
 .timeline::before {
     content: '';
     position: absolute;
-    left: 150px;
+    left: 100px;
     top: 0;
     bottom: 0;
     width: 2px;
@@ -31,13 +33,13 @@ If your plugin does not need CSS, delete this file.
 .timeline-event {
     position: relative;
     margin-bottom: 30px;
-    padding-left: 170px;
+    padding-left: 120px;
 }
 
 .timeline-date {
     position: absolute;
     left: 0;
-    width: 130px;
+    width: 80px;
     text-align: right;
 }
 
@@ -55,7 +57,7 @@ If your plugin does not need CSS, delete this file.
 
 .timeline-point {
     position: absolute;
-    left: 144px;
+    left: 94px;
     top: 15px;
     width: 16px;
     height: 16px;
