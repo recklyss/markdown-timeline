@@ -7,19 +7,23 @@ export function parseTimelineContent(content: string): TimelineEvent[] {
     sections.forEach(section => {
         const lines = section.trim().split('\n');
         const currentEvent: Partial<TimelineEvent> = {};
-        let isContent = false;
         const contentLines: string[] = [];
+        
+        let foundDate = false;
+        let foundTitle = false;
 
         lines.forEach(line => {
             line = line.trim();
-            if (line.startsWith('# ')) {
+            if (!foundDate && line.startsWith('# ')) {
                 const fullDate = line.replace('# ', '');
                 currentEvent.date = fullDate;
                 currentEvent.year = fullDate.split('-')[0];
-            } else if (line.startsWith('## ')) {
+                foundDate = true;
+            } else if (!foundTitle && line.startsWith('## ')) {
                 currentEvent.title = line.replace('## ', '');
-                isContent = true;
-            } else if (isContent && line) {
+                foundTitle = true;
+            } else if (line) {
+                // Everything else goes to content, including additional # and ##
                 contentLines.push(line);
             }
         });
@@ -37,7 +41,7 @@ export function parseTimelineContent(content: string): TimelineEvent[] {
     return events.sort((a, b) => {
         const dateA = new Date(a.date);
         const dateB = new Date(b.date);
-
+        
         // Sort in descending order (newest first)
         return dateB.getTime() - dateA.getTime();
     });

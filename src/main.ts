@@ -1,4 +1,4 @@
-import { Plugin } from 'obsidian';
+import { Plugin, MarkdownRenderer } from 'obsidian';
 import { TimelineView, VIEW_TYPE_TIMELINE } from './views/TimelineView';
 import { TimelinePluginSettings, DEFAULT_SETTINGS } from './types';
 import { parseTimelineContent } from './utils/parser';
@@ -17,26 +17,37 @@ export default class TimelinePlugin extends Plugin {
         );
 
         // Register code block processor for timeline
-        this.registerMarkdownCodeBlockProcessor('timeline', (source, el, ctx) => {
-            // Create a container for the timeline
+        this.registerMarkdownCodeBlockProcessor('timeline', async (source, el, ctx) => {
             const container = el.createEl('div', { cls: 'timeline-container' });
             
             const events = parseTimelineContent(source);
             const timeline = container.createEl("div", { cls: "timeline" });
             
-            events.forEach(event => {
+            for (const event of events) {
                 const eventEl = timeline.createEl("div", { cls: "timeline-event" });
                 
                 const dateEl = eventEl.createEl("div", { cls: "timeline-date" });
-                dateEl.createEl("span", { cls: "timeline-year", text: event.year });
-                dateEl.createEl("span", { cls: "timeline-month", text: event.date });
+                const year = event.date.split('-')[0];
+                dateEl.createEl("span", { cls: "timeline-year", text: year });
+                const displayDate = new Date(event.date).toLocaleDateString('en-US', {
+                    month: 'short',
+                    day: 'numeric'
+                });
+                dateEl.createEl("span", { cls: "timeline-month", text: displayDate });
                 
                 eventEl.createEl("div", { cls: "timeline-point" });
                 
                 const contentEl = eventEl.createEl("div", { cls: "timeline-content" });
                 contentEl.createEl("h3", { text: event.title });
-                contentEl.createEl("p", { text: event.content });
-            });
+                
+                const markdownContent = contentEl.createDiv("timeline-markdown-content");
+                await MarkdownRenderer.renderMarkdown(
+                    event.content,
+                    markdownContent,
+                    ctx.sourcePath,
+                    this
+                );
+            }
         });
 
         // Add ribbon icon
