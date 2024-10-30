@@ -2,6 +2,8 @@
 
 This plugin converts markdown files into timeline visualizations within Obsidian.
 
+![example](./example.png)
+
 ## Features
 
 - Convert markdown content into visual timelines
