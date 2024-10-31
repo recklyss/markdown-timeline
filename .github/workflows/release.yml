@@ -1,13 +1,9 @@
-name: Release Obsidian plugin - Markdown Timeline
+name: Release Obsidian plugin
 
 on:
   push:
     tags:
-      # release when tag is in the format of X.Y.Z
-      - "*"
-
-env:
-  PLUGIN_NAME: markdown-timeline
+      - '*'
 
 jobs:
   build:
@@ -31,25 +27,8 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           tag="${GITHUB_REF#refs/tags/}"
-          
-          # Read the release notes
-          notes=""
-          if [ -f release-notes.md ]; then
-            notes="$(cat release-notes.md)"
-          fi
-          
+
           gh release create "$tag" \
             --title="$tag" \
-            --notes="$notes" \
+            --notes-file="release-notes.md" \
             main.js manifest.json styles.css
-
-      - name: Upload files
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: |
-          tag="${GITHUB_REF#refs/tags/}"
-          
-          gh release upload "$tag" \
-            main.js \
-            manifest.json \
-            styles.css 
