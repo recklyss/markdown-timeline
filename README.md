@@ -1,6 +1,8 @@
-# Obsidian Timeline Plugin
+# Markdown Timeline
 
-This plugin converts markdown files into timeline visualizations within Obsidian.
+Convert markdown files into timeline visualizations within Obsidian.
+
+![Timeline Example](./example.png)
 
 ## Features
 
@@ -23,34 +25,35 @@ This plugin converts markdown files into timeline visualizations within Obsidian
 
 Create a timeline by using a code block with the `timeline` language identifier:
 
-```markdown
-\```timeline
-# 2018-07-21
-## My Second job
-I left Tonghuashun, find a new job in 51gongjijin. 
-I learnt a lot in this company, but this is not a good company, 
-the business is going die.
+~~~
+```timeline
+# 2024-03-15
+## Event Title
+Content
 
 ---
 
-# 2017-02-20
-## My first job
-Move to Hangzhou, joined Tonghuashun. 
-This was my first job.
-\```
+# 2024-01-01
+## Another Event
+More content here
 ```
+~~~
 
-### Format Explanation
-- `# YYYY-MM-DD`: The date of the event
-- `## Title`: The title of the event
-- Following lines: The content of the event
-- `---`: Separator between events
+### Syntax Structure
+
+Each timeline event follows this structure:
+- `# YYYY-MM-DD` - The date of the event
+- `## Title` - The event title
+- Content - The event description, can be markdown content
+- `---` - Separator between events
+
+## Support
+
+If you encounter any issues or have suggestions:
+1. Check the [GitHub Issues](https://github.com/recklyss/obsidian-timeline/issues)
+2. Create a new issue if needed
 
 ## License
 
 MIT License - see [LICENSE](LICENSE) file for details
-
-## Contributing
-
-Pull requests are welcome! For major changes, please open [GitHub Issues](https://github.com/recklyss/timeline/issues) first to discuss what you would like to change.
 

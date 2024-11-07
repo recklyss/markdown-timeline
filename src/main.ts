@@ -1,7 +1,28 @@
-import { Plugin, MarkdownRenderer } from 'obsidian';
+import { Plugin, MarkdownRenderer, MarkdownRenderChild } from 'obsidian';
 import { TimelineView, VIEW_TYPE_TIMELINE } from './views/TimelineView';
 import { TimelinePluginSettings, DEFAULT_SETTINGS } from './types';
 import { parseTimelineContent } from './utils/parser';
+
+class TimelineEventContent extends MarkdownRenderChild {
+    constructor(
+        container: HTMLElement,
+        private content: string,
+        private ctx: any,
+        private plugin: TimelinePlugin
+    ) {
+        super(container);
+    }
+
+    async onload() {
+        await MarkdownRenderer.render(
+            this.plugin.app,
+            this.content,
+            this.containerEl,
+            this.ctx.sourcePath,
+            this.plugin
+        );
+    }
+}
 
 export default class TimelinePlugin extends Plugin {
     settings: TimelinePluginSettings;
@@ -41,18 +62,14 @@ export default class TimelinePlugin extends Plugin {
                 contentEl.createEl("h3", { text: event.title });
                 
                 const markdownContent = contentEl.createDiv("timeline-markdown-content");
-                await MarkdownRenderer.renderMarkdown(
-                    event.content,
+                const markdownRenderChild = new TimelineEventContent(
                     markdownContent,
-                    ctx.sourcePath,
+                    event.content,
+                    ctx,
                     this
                 );
+                this.addChild(markdownRenderChild);
             }
-        });
-
-        // Add ribbon icon
-        this.addRibbonIcon('clock', 'Timeline View', () => {
-            this.activateView();
         });
     }
 
