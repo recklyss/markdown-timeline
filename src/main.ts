@@ -1,28 +1,8 @@
-import { Plugin, MarkdownRenderer, MarkdownRenderChild } from 'obsidian';
+import { Plugin } from 'obsidian';
 import { TimelineView, VIEW_TYPE_TIMELINE } from './views/TimelineView';
 import { TimelinePluginSettings, DEFAULT_SETTINGS } from './types';
 import { parseTimelineContent } from './utils/parser';
-
-class TimelineEventContent extends MarkdownRenderChild {
-    constructor(
-        container: HTMLElement,
-        private content: string,
-        private ctx: any,
-        private plugin: TimelinePlugin
-    ) {
-        super(container);
-    }
-
-    async onload() {
-        await MarkdownRenderer.render(
-            this.plugin.app,
-            this.content,
-            this.containerEl,
-            this.ctx.sourcePath,
-            this.plugin
-        );
-    }
-}
+import { renderTimelineEvents } from './utils/timeline-renderer';
 
 export default class TimelinePlugin extends Plugin {
     settings: TimelinePluginSettings;
@@ -31,45 +11,16 @@ export default class TimelinePlugin extends Plugin {
     async onload() {
         await this.loadSettings();
 
-        // Register timeline view
         this.registerView(
             VIEW_TYPE_TIMELINE,
-            (leaf) => (this.timelineView = new TimelineView(leaf))
+            (leaf) => (this.timelineView = new TimelineView(leaf, this))
         );
 
-        // Register code block processor for timeline
         this.registerMarkdownCodeBlockProcessor('timeline', async (source, el, ctx) => {
             const container = el.createEl('div', { cls: 'timeline-container' });
-            
             const events = parseTimelineContent(source);
-            const timeline = container.createEl("div", { cls: "timeline" });
-            
-            for (const event of events) {
-                const eventEl = timeline.createEl("div", { cls: "timeline-event" });
-                
-                const dateEl = eventEl.createEl("div", { cls: "timeline-date" });
-                const year = event.date.split('-')[0];
-                dateEl.createEl("span", { cls: "timeline-year", text: year });
-                const displayDate = new Date(event.date).toLocaleDateString('en-US', {
-                    month: 'short',
-                    day: 'numeric'
-                });
-                dateEl.createEl("span", { cls: "timeline-month", text: displayDate });
-                
-                eventEl.createEl("div", { cls: "timeline-point" });
-                
-                const contentEl = eventEl.createEl("div", { cls: "timeline-content" });
-                contentEl.createEl("h3", { text: event.title });
-                
-                const markdownContent = contentEl.createDiv("timeline-markdown-content");
-                const markdownRenderChild = new TimelineEventContent(
-                    markdownContent,
-                    event.content,
-                    ctx,
-                    this
-                );
-                this.addChild(markdownRenderChild);
-            }
+            const renderChildren = renderTimelineEvents(container, events, this, ctx.sourcePath);
+            renderChildren.forEach(child => this.addChild(child));
         });
     }
 
