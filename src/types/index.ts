@@ -8,6 +8,7 @@ export const DEFAULT_SETTINGS: TimelinePluginSettings = {
 
 export interface TimelineEvent {
     date: string;
+    year: string;
     title: string;
     content: string;
 } 
