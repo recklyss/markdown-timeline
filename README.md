@@ -42,15 +42,16 @@ More content here
 ### Syntax Structure
 
 Each timeline event follows this structure:
+
 - `# YYYY-MM-DD` - The date of the event
 - `## Title` - The event title
-- Content - The event description, can be markdown content
+- Content - The event description, can be markdown content, also support wikilink, try `[[some article]]` and `![[some notes]]`
 - `---` - Separator between events
 
 ## Support
 
 If you encounter any issues or have suggestions:
-1. Check the [GitHub Issues](https://github.com/recklyss/obsidian-timeline/issues)
+1. Check the [GitHub Issues](https://github.com/recklyss/markdown-timeline/issues)
 2. Create a new issue if needed
 
 ## License
