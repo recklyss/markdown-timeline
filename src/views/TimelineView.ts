@@ -31,7 +31,7 @@ export class TimelineView extends ItemView {
         if (!container) return;
 
         container.empty();
-        
+
         const events = parseTimelineContent(content);
         const renderChildren = renderTimelineEvents(container, events, this.plugin);
         renderChildren.forEach(child => this.addChild(child));

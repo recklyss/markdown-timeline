@@ -1,5 +1,6 @@
 import { MarkdownRenderChild, MarkdownRenderer, Plugin } from 'obsidian';
 import { TimelineEvent } from '../types';
+import { formatDate } from './formatDate';
 
 export class TimelineEventContent extends MarkdownRenderChild {
     constructor(
@@ -30,24 +31,29 @@ export function renderTimelineEvents(
 ): TimelineEventContent[] {
     const timeline = container.createEl("div", { cls: "timeline" });
     const renderChildren: TimelineEventContent[] = [];
-    
+
     for (const event of events) {
         const eventEl = timeline.createEl("div", { cls: "timeline-event" });
-        
+
         const dateEl = eventEl.createEl("div", { cls: "timeline-date" });
-        const year = event.date.split('-')[0];
-        dateEl.createEl("span", { cls: "timeline-year", text: year });
-        const displayDate = new Date(event.date).toLocaleDateString('en-US', {
-            month: 'short',
-            day: 'numeric'
-        });
-        dateEl.createEl("span", { cls: "timeline-month", text: displayDate });
-        
+        dateEl.createEl("span", { cls: "timeline-year", text: event.year });
+
+        if (event.month) {
+            const monthDisplay = new Intl.DateTimeFormat('en-US', { month: 'short' })
+                .format(new Date(2000, parseInt(event.month) - 1));
+
+            const dateDisplay = event.day
+                ? `${monthDisplay} ${event.day}`
+                : monthDisplay;
+
+            dateEl.createEl("span", { cls: "timeline-month", text: dateDisplay });
+        }
+
         eventEl.createEl("div", { cls: "timeline-point" });
-        
+
         const contentEl = eventEl.createEl("div", { cls: "timeline-content" });
         contentEl.createEl("h3", { text: event.title });
-        
+
         const markdownContent = contentEl.createDiv("timeline-markdown-content");
         const renderChild = new TimelineEventContent(
             markdownContent,
@@ -57,6 +63,6 @@ export function renderTimelineEvents(
         );
         renderChildren.push(renderChild);
     }
-    
+
     return renderChildren;
 } 
