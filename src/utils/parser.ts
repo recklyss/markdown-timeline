@@ -47,31 +47,28 @@ export function parseTimelineContent(content: string): TimelineEvent[] {
         }
     });
 
-    // Sort events by date components (newest first)
     return events.sort((a, b) => {
-        // Compare years
+
         const yearDiff = parseInt(b.year) - parseInt(a.year);
         if (yearDiff !== 0) return yearDiff;
 
-        // If years are equal, compare months if they exist
         if (a.month && b.month) {
             const monthDiff = parseInt(b.month) - parseInt(a.month);
             if (monthDiff !== 0) return monthDiff;
         } else if (a.month) {
-            return -1; // a has month, b doesn't
+            return -1;
         } else if (b.month) {
-            return 1;  // b has month, a doesn't
+            return 1;
         }
 
-        // If months are equal, compare days if they exist
         if (a.day && b.day) {
             return parseInt(b.day) - parseInt(a.day);
         } else if (a.day) {
-            return -1; // a has day, b doesn't
+            return -1;
         } else if (b.day) {
-            return 1;  // b has day, a doesn't
+            return 1;
         }
 
-        return 0; // completely equal
+        return 0;
     });
 } 
