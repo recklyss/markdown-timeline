@@ -6,3 +6,115 @@ available in the app when your plugin is enabled.
 If your plugin does not need CSS, delete this file.
 
 */
+
+.timeline-container {
+    padding: 20px;
+    max-width: 1000px;
+    margin: 0;
+    padding-left: 20px;
+}
+
+.timeline {
+    position: relative;
+    padding: 20px 0;
+    width: 80%;
+}
+
+.timeline::before {
+    content: '';
+    position: absolute;
+    left: 100px;
+    top: 0;
+    bottom: 0;
+    width: 2px;
+    background: var(--background-modifier-border);
+}
+
+.timeline-event {
+    position: relative;
+    margin-bottom: 30px;
+    padding-left: 120px;
+}
+
+.timeline-date {
+    position: absolute;
+    left: 0;
+    width: 80px;
+    text-align: right;
+}
+
+.timeline-year {
+    display: block;
+    font-weight: bold;
+    color: var(--text-muted);
+}
+
+.timeline-month {
+    display: block;
+    font-size: 0.9em;
+    color: var(--text-muted);
+}
+
+.timeline-point {
+    position: absolute;
+    left: 94px;
+    top: 15px;
+    width: 16px;
+    height: 16px;
+    border-radius: 50%;
+    background: var(--interactive-accent);
+    z-index: 1;
+}
+
+.timeline-content {
+    background: var(--background-primary-alt);
+    border-radius: 4px;
+    padding: 15px;
+}
+
+.timeline-content h3 {
+    margin: 0 0 10px 0;
+    color: var(--text-normal);
+}
+
+.timeline-content p {
+    margin: 0;
+    color: var(--text-muted);
+}
+
+.timeline-markdown-content {
+    margin-top: 10px;
+}
+
+.timeline-markdown-content img {
+    max-width: 100%;
+    border-radius: 4px;
+}
+
+.timeline-markdown-content pre {
+    padding: 10px;
+    border-radius: 4px;
+    background-color: var(--code-background);
+}
+
+.timeline-markdown-content ul,
+.timeline-markdown-content ol {
+    margin: 10px 0;
+    padding-left: 20px;
+}
+
+.timeline-markdown-content blockquote {
+    margin: 10px 0;
+    padding-left: 15px;
+    border-left: 3px solid var(--quote-border);
+    color: var(--text-muted);
+}
+
+.timeline-markdown-content .internal-link {
+    color: var(--link-color);
+    text-decoration: none;
+}
+
+.timeline-markdown-content .internal-link:hover {
+    text-decoration: underline;
+}
