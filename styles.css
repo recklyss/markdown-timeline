@@ -121,8 +121,10 @@ If your plugin does not need CSS, delete this file.
 
 .timeline-header {
     display: flex;
-    justify-content: flex-end;
-    padding: 8px 16px;
+    justify-content: flex-start;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 0;
     border-bottom: 1px solid var(--background-modifier-border);
 }
 
@@ -148,4 +150,38 @@ If your plugin does not need CSS, delete this file.
     margin-bottom: 1em;
     border-bottom: 1px solid var(--background-modifier-border);
     padding-bottom: 0.5em;
+}
+
+.timeline-search {
+    width: 280px;
+    flex: none;
+    padding: 4px 8px;
+    border: 1px solid var(--background-modifier-border);
+    border-radius: 4px;
+    background-color: var(--background-primary);
+    color: var(--text-normal);
+    font-size: 14px;
+}
+
+.timeline-search:focus {
+    outline: none;
+    border-color: var(--interactive-accent);
+}
+
+.timeline-search::placeholder {
+    color: var(--text-muted);
+}
+
+.timeline-search-button {
+    background: transparent;
+    border: none;
+    padding: 4px;
+    cursor: pointer;
+    color: var(--text-muted);
+    border-radius: 4px;
+}
+
+.timeline-search-button:hover {
+    color: var(--text-normal);
+    background-color: var(--background-modifier-hover);
 }

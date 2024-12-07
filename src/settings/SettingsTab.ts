@@ -31,7 +31,7 @@ export class TimelineSettingTab extends PluginSettingTab {
 
         new Setting(containerEl)
             .setName('Show header buttons')
-            .setDesc('Show or hide the sort order toggle button in timeline headers')
+            .setDesc('Show or hide the operation buttons in timeline headers')
             .addToggle(toggle => toggle
                 .setValue(this.plugin.settings.showHeaderButtons)
                 .onChange(async (value) => {

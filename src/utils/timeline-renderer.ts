@@ -34,13 +34,53 @@ export function renderTimelineEvents(
 	events: TimelineEvent[],
 	plugin: Plugin,
 	sourcePath = "",
-	initialOrder?: "asc" | "desc"
+	initialOrder?: "asc" | "desc",
+	searchQuery = ""
 ): TimelineEventContent[] {
-	let currentOrder =
-		initialOrder ?? (plugin as TimelinePlugin).settings.timelineOrder;
+	let currentOrder = initialOrder ?? (plugin as TimelinePlugin).settings.timelineOrder;
+	let currentSearch = searchQuery;
 
 	if ((plugin as TimelinePlugin).settings.showHeaderButtons) {
 		const headerEl = container.createEl("div", { cls: "timeline-header" });
+
+		const searchEl = headerEl.createEl("input", {
+			cls: "timeline-search",
+			attr: { 
+				type: "text",
+				placeholder: "Search events...",
+				value: currentSearch
+			}
+		});
+
+		const searchButton = headerEl.createEl("button", {
+			cls: "timeline-search-button",
+		});
+		setIcon(searchButton, "search");
+		searchButton.setAttribute("aria-label", "Search events");
+
+		const performSearch = () => {
+			currentSearch = searchEl.value;
+			container.empty();
+			const newRenderChildren = renderTimelineEvents(
+				container,
+				events,
+				plugin,
+				sourcePath,
+				currentOrder,
+				currentSearch
+			);
+
+			if (plugin instanceof TimelinePlugin) {
+				newRenderChildren.forEach((child) => plugin.addChild(child));
+			}
+		};
+
+		searchButton.addEventListener("click", performSearch);
+		searchEl.addEventListener("keypress", (e) => {
+			if (e.key === "Enter") {
+				performSearch();
+			}
+		});
 
 		const orderButton = headerEl.createEl("button", {
 			cls: "timeline-order-toggle",
@@ -49,14 +89,14 @@ export function renderTimelineEvents(
 
 		orderButton.addEventListener("click", () => {
 			currentOrder = currentOrder === "asc" ? "desc" : "asc";
-
 			container.empty();
 			const newRenderChildren = renderTimelineEvents(
 				container,
 				events,
 				plugin,
 				sourcePath,
-				currentOrder
+				currentOrder,
+				currentSearch
 			);
 
 			if (plugin instanceof TimelinePlugin) {
@@ -68,7 +108,16 @@ export function renderTimelineEvents(
 	const timeline = container.createEl("div", { cls: "timeline" });
 	const renderChildren: TimelineEventContent[] = [];
 
-	const sortedEvents = [...events].sort((a, b) => {
+	let filteredEvents = events;
+	if (currentSearch) {
+		const searchLower = currentSearch.toLowerCase();
+		filteredEvents = events.filter(event => 
+			event.title.toLowerCase().includes(searchLower) ||
+			event.content.toLowerCase().includes(searchLower)
+		);
+	}
+
+	const sortedEvents = [...filteredEvents].sort((a, b) => {
 		const aDate = new Date(`${a.year}-${a.month || "01"}-${a.day || "01"}`);
 		const bDate = new Date(`${b.year}-${b.month || "01"}-${b.day || "01"}`);
 		const modifier = currentOrder === "asc" ? 1 : -1;
@@ -77,7 +126,6 @@ export function renderTimelineEvents(
 
 	for (const event of sortedEvents) {
 		const eventEl = timeline.createEl("div", { cls: "timeline-event" });
-
 		const dateEl = eventEl.createEl("div", { cls: "timeline-date" });
 		dateEl.createEl("span", { cls: "timeline-year", text: event.year });
 
@@ -97,10 +145,8 @@ export function renderTimelineEvents(
 		}
 
 		eventEl.createEl("div", { cls: "timeline-point" });
-
 		const contentEl = eventEl.createEl("div", { cls: "timeline-content" });
 		contentEl.createEl("h3", { text: event.title });
-
 		const markdownContent = contentEl.createDiv("timeline-markdown-content");
 		const renderChild = new TimelineEventContent(
 			markdownContent,
