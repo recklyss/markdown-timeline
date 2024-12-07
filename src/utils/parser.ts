@@ -18,10 +18,8 @@ export function parseTimelineContent(content: string): TimelineEvent[] {
                 const dateStr = line.replace('# ', '');
                 const dateParts = dateStr.split('-');
 
-                // Always set the year
                 currentEvent.year = dateParts[0];
 
-                // Set month and day if they exist
                 if (dateParts.length > 1) {
                     currentEvent.month = dateParts[1];
                 }

@@ -1,11 +1,13 @@
 export interface TimelinePluginSettings {
     defaultView: string;
     timelineOrder: 'asc' | 'desc';
+    showHeaderButtons: boolean;
 }
 
 export const DEFAULT_SETTINGS: TimelinePluginSettings = {
     defaultView: 'basic',
-    timelineOrder: 'asc'
+    timelineOrder: 'asc',
+    showHeaderButtons: true
 };
 
 export interface TimelineEvent {
