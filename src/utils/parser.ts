@@ -47,28 +47,5 @@ export function parseTimelineContent(content: string): TimelineEvent[] {
         }
     });
 
-    return events.sort((a, b) => {
-
-        const yearDiff = parseInt(b.year) - parseInt(a.year);
-        if (yearDiff !== 0) return yearDiff;
-
-        if (a.month && b.month) {
-            const monthDiff = parseInt(b.month) - parseInt(a.month);
-            if (monthDiff !== 0) return monthDiff;
-        } else if (a.month) {
-            return -1;
-        } else if (b.month) {
-            return 1;
-        }
-
-        if (a.day && b.day) {
-            return parseInt(b.day) - parseInt(a.day);
-        } else if (a.day) {
-            return -1;
-        } else if (b.day) {
-            return 1;
-        }
-
-        return 0;
-    });
+    return events;
 } 

@@ -1,6 +1,7 @@
-import { MarkdownRenderChild, MarkdownRenderer, Plugin } from 'obsidian';
+import { MarkdownRenderChild, MarkdownRenderer, Plugin, setIcon } from 'obsidian';
+
 import { TimelineEvent } from '../types';
-import { formatDate } from './formatDate';
+import TimelinePlugin from '../main';
 
 export class TimelineEventContent extends MarkdownRenderChild {
     constructor(
@@ -29,10 +30,43 @@ export function renderTimelineEvents(
     plugin: Plugin,
     sourcePath = ''
 ): TimelineEventContent[] {
+    // Create header container
+    const headerEl = container.createEl("div", { cls: "timeline-header" });
+    
+    // Create order toggle button
+    const orderButton = headerEl.createEl("button", { cls: "timeline-order-toggle" });
+    setOrderButtonIcon(orderButton, (plugin as TimelinePlugin).settings.timelineOrder);
+    
+    orderButton.addEventListener("click", async () => {
+        const timelinePlugin = plugin as TimelinePlugin;
+        timelinePlugin.settings.timelineOrder = 
+            timelinePlugin.settings.timelineOrder === 'asc' ? 'desc' : 'asc';
+        await timelinePlugin.saveSettings();
+        setOrderButtonIcon(orderButton, timelinePlugin.settings.timelineOrder);
+        
+        // Re-render with new order
+        container.empty();
+        const newRenderChildren = renderTimelineEvents(container, events, plugin, sourcePath);
+        // Add the new children to the plugin
+        newRenderChildren.forEach(child => {
+            if (plugin instanceof TimelinePlugin) {
+                plugin.addChild(child);
+            }
+        });
+    });
+
     const timeline = container.createEl("div", { cls: "timeline" });
     const renderChildren: TimelineEventContent[] = [];
 
-    for (const event of events) {
+    // Sort events based on current order
+    const sortedEvents = [...events].sort((a, b) => {
+        const aDate = new Date(`${a.year}-${a.month || '01'}-${a.day || '01'}`);
+        const bDate = new Date(`${b.year}-${b.month || '01'}-${b.day || '01'}`);
+        const modifier = (plugin as TimelinePlugin).settings.timelineOrder === 'asc' ? 1 : -1;
+        return (aDate.getTime() - bDate.getTime()) * modifier;
+    });
+
+    for (const event of sortedEvents) {
         const eventEl = timeline.createEl("div", { cls: "timeline-event" });
 
         const dateEl = eventEl.createEl("div", { cls: "timeline-date" });
@@ -65,4 +99,9 @@ export function renderTimelineEvents(
     }
 
     return renderChildren;
+}
+
+function setOrderButtonIcon(button: HTMLElement, order: 'asc' | 'desc') {
+    button.empty();
+    setIcon(button, order === 'asc' ? 'arrow-up' : 'arrow-down');
 } 

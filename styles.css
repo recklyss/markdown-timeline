@@ -118,3 +118,24 @@ If your plugin does not need CSS, delete this file.
 .timeline-markdown-content .internal-link:hover {
     text-decoration: underline;
 }
+
+.timeline-header {
+    display: flex;
+    justify-content: flex-end;
+    padding: 8px 16px;
+    border-bottom: 1px solid var(--background-modifier-border);
+}
+
+.timeline-order-toggle {
+    background: transparent;
+    border: none;
+    padding: 4px;
+    cursor: pointer;
+    color: var(--text-muted);
+    border-radius: 4px;
+}
+
+.timeline-order-toggle:hover {
+    color: var(--text-normal);
+    background-color: var(--background-modifier-hover);
+}

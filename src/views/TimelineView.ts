@@ -1,13 +1,18 @@
-import { ItemView, WorkspaceLeaf, Plugin } from 'obsidian';
+import { ItemView, WorkspaceLeaf } from 'obsidian';
+
+import TimelinePlugin from '../main';
 import { parseTimelineContent } from '../utils/parser';
 import { renderTimelineEvents } from '../utils/timeline-renderer';
+import { sortTimelineEvents } from '../utils/sort';
 
 export const VIEW_TYPE_TIMELINE = "timeline-view";
 
 export class TimelineView extends ItemView {
+    private content = '';
+    
     constructor(
         leaf: WorkspaceLeaf,
-        private plugin: Plugin
+        private plugin: TimelinePlugin
     ) {
         super(leaf);
     }
@@ -27,13 +32,19 @@ export class TimelineView extends ItemView {
     }
 
     async setContent(content: string) {
+        this.content = content;
+        await this.renderContent();
+    }
+
+    private async renderContent() {
         const container = this.containerEl.querySelector(".timeline-container") as HTMLElement;
         if (!container) return;
 
         container.empty();
 
-        const events = parseTimelineContent(content);
-        const renderChildren = renderTimelineEvents(container, events, this.plugin);
+        const events = parseTimelineContent(this.content);
+        const sortedEvents = sortTimelineEvents(events, this.plugin.settings.timelineOrder);
+        const renderChildren = renderTimelineEvents(container, sortedEvents, this.plugin);
         renderChildren.forEach(child => this.addChild(child));
     }
 } 

@@ -1,8 +1,10 @@
-import { Plugin } from 'obsidian';
+import { DEFAULT_SETTINGS, TimelinePluginSettings } from './types';
 import { TimelineView, VIEW_TYPE_TIMELINE } from './views/TimelineView';
-import { TimelinePluginSettings, DEFAULT_SETTINGS } from './types';
+
+import { Plugin } from 'obsidian';
 import { parseTimelineContent } from './utils/parser';
 import { renderTimelineEvents } from './utils/timeline-renderer';
+import { sortTimelineEvents } from 'utils/sort';
 
 export default class TimelinePlugin extends Plugin {
     settings: TimelinePluginSettings;
@@ -19,7 +21,8 @@ export default class TimelinePlugin extends Plugin {
         this.registerMarkdownCodeBlockProcessor('timeline', async (source, el, ctx) => {
             const container = el.createEl('div', { cls: 'timeline-container' });
             const events = parseTimelineContent(source);
-            const renderChildren = renderTimelineEvents(container, events, this, ctx.sourcePath);
+            const sortedEvents = sortTimelineEvents(events, this.settings.timelineOrder);
+            const renderChildren = renderTimelineEvents(container, sortedEvents, this, ctx.sourcePath);
             renderChildren.forEach(child => this.addChild(child));
         });
     }
