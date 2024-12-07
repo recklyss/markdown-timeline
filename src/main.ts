@@ -2,6 +2,7 @@ import { DEFAULT_SETTINGS, TimelinePluginSettings } from './types';
 import { TimelineView, VIEW_TYPE_TIMELINE } from './views/TimelineView';
 
 import { Plugin } from 'obsidian';
+import { TimelineSettingTab } from './settings/SettingsTab';
 import { parseTimelineContent } from './utils/parser';
 import { renderTimelineEvents } from './utils/timeline-renderer';
 import { sortTimelineEvents } from 'utils/sort';
@@ -12,6 +13,8 @@ export default class TimelinePlugin extends Plugin {
 
     async onload() {
         await this.loadSettings();
+
+        this.addSettingTab(new TimelineSettingTab(this.app, this));
 
         this.registerView(
             VIEW_TYPE_TIMELINE,

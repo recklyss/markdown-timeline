@@ -1,0 +1,32 @@
+import { App, PluginSettingTab, Setting } from 'obsidian';
+
+import TimelinePlugin from '../main';
+
+export class TimelineSettingTab extends PluginSettingTab {
+    plugin: TimelinePlugin;
+
+    constructor(app: App, plugin: TimelinePlugin) {
+        super(app, plugin);
+        this.plugin = plugin;
+    }
+
+    display(): void {
+        const { containerEl } = this;
+        containerEl.empty();
+
+        containerEl.createEl('h2', { text: 'Timeline Settings' });
+
+        new Setting(containerEl)
+            .setName('Default sort order')
+            .setDesc('Choose the default sort order for timeline events')
+            .addDropdown(dropdown => dropdown
+                .addOption('asc', 'Ascending (oldest first)')
+                .addOption('desc', 'Descending (newest first)')
+                .setValue(this.plugin.settings.timelineOrder)
+                .onChange(async (value) => {
+                    this.plugin.settings.timelineOrder = value as 'asc' | 'desc';
+                    await this.plugin.saveSettings();
+                })
+            );
+    }
+} 

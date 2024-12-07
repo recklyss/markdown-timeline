@@ -139,3 +139,13 @@ If your plugin does not need CSS, delete this file.
     color: var(--text-normal);
     background-color: var(--background-modifier-hover);
 }
+
+.timeline-settings {
+    padding: 10px 20px;
+}
+
+.timeline-settings h2 {
+    margin-bottom: 1em;
+    border-bottom: 1px solid var(--background-modifier-border);
+    padding-bottom: 0.5em;
+}

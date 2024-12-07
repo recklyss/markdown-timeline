@@ -36,7 +36,7 @@ export class TimelineView extends ItemView {
         await this.renderContent();
     }
 
-    private async renderContent() {
+    public async renderContent() {
         const container = this.containerEl.querySelector(".timeline-container") as HTMLElement;
         if (!container) return;
 

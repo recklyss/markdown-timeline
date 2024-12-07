@@ -28,41 +28,41 @@ export function renderTimelineEvents(
     container: HTMLElement,
     events: TimelineEvent[],
     plugin: Plugin,
-    sourcePath = ''
+    sourcePath = '',
+    initialOrder?: 'asc' | 'desc'
 ): TimelineEventContent[] {
     // Create header container
     const headerEl = container.createEl("div", { cls: "timeline-header" });
     
+    // Initialize this timeline's order from the passed order or default settings
+    let currentOrder = initialOrder ?? (plugin as TimelinePlugin).settings.timelineOrder;
+    
     // Create order toggle button
     const orderButton = headerEl.createEl("button", { cls: "timeline-order-toggle" });
-    setOrderButtonIcon(orderButton, (plugin as TimelinePlugin).settings.timelineOrder);
+    updateOrderButton(orderButton, currentOrder);
     
-    orderButton.addEventListener("click", async () => {
-        const timelinePlugin = plugin as TimelinePlugin;
-        timelinePlugin.settings.timelineOrder = 
-            timelinePlugin.settings.timelineOrder === 'asc' ? 'desc' : 'asc';
-        await timelinePlugin.saveSettings();
-        setOrderButtonIcon(orderButton, timelinePlugin.settings.timelineOrder);
+    orderButton.addEventListener("click", () => {
+        // Toggle order for this timeline only
+        currentOrder = currentOrder === 'asc' ? 'desc' : 'asc';
         
         // Re-render with new order
         container.empty();
-        const newRenderChildren = renderTimelineEvents(container, events, plugin, sourcePath);
+        const newRenderChildren = renderTimelineEvents(container, events, plugin, sourcePath, currentOrder);
+        
         // Add the new children to the plugin
-        newRenderChildren.forEach(child => {
-            if (plugin instanceof TimelinePlugin) {
-                plugin.addChild(child);
-            }
-        });
+        if (plugin instanceof TimelinePlugin) {
+            newRenderChildren.forEach(child => plugin.addChild(child));
+        }
     });
 
     const timeline = container.createEl("div", { cls: "timeline" });
     const renderChildren: TimelineEventContent[] = [];
 
-    // Sort events based on current order
+    // Sort events based on this timeline's current order
     const sortedEvents = [...events].sort((a, b) => {
         const aDate = new Date(`${a.year}-${a.month || '01'}-${a.day || '01'}`);
         const bDate = new Date(`${b.year}-${b.month || '01'}-${b.day || '01'}`);
-        const modifier = (plugin as TimelinePlugin).settings.timelineOrder === 'asc' ? 1 : -1;
+        const modifier = currentOrder === 'asc' ? 1 : -1;
         return (aDate.getTime() - bDate.getTime()) * modifier;
     });
 
@@ -101,7 +101,8 @@ export function renderTimelineEvents(
     return renderChildren;
 }
 
-function setOrderButtonIcon(button: HTMLElement, order: 'asc' | 'desc') {
+function updateOrderButton(button: HTMLElement, order: 'asc' | 'desc') {
     button.empty();
     setIcon(button, order === 'asc' ? 'arrow-up' : 'arrow-down');
+    button.setAttribute('aria-label', order === 'asc' ? 'Sorted oldest first' : 'Sorted newest first');
 } 
