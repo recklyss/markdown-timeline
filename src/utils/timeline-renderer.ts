@@ -4,9 +4,12 @@ import {
 	Plugin,
 	setIcon,
 } from "obsidian";
+import { TIMELINE_CLASSES, TIMELINE_ORDER } from "../constants/timeline";
 
 import { TimelineEvent } from "../types";
+import { TimelineOrderToggle } from "../components/TimelineOrderToggle";
 import TimelinePlugin from "../main";
+import { TimelineSearch } from "../components/TimelineSearch";
 
 export class TimelineEventContent extends MarkdownRenderChild {
 	constructor(
@@ -34,100 +37,58 @@ export function renderTimelineEvents(
 	events: TimelineEvent[],
 	plugin: Plugin,
 	sourcePath = "",
-	initialOrder?: "asc" | "desc",
+	initialOrder?: typeof TIMELINE_ORDER.ASC | typeof TIMELINE_ORDER.DESC,
 	searchQuery = ""
 ): TimelineEventContent[] {
 	let currentOrder = initialOrder ?? (plugin as TimelinePlugin).settings.timelineOrder;
-	let currentSearch = searchQuery;
-
-	if ((plugin as TimelinePlugin).settings.showHeaderButtons) {
-		const headerEl = container.createEl("div", { cls: "timeline-header" });
-
-		const searchEl = headerEl.createEl("input", {
-			cls: "timeline-search",
-			attr: { 
-				type: "text",
-				placeholder: "Search events...",
-				value: currentSearch
-			}
-		});
-
-		const searchButton = headerEl.createEl("button", {
-			cls: "timeline-search-button",
-		});
-		setIcon(searchButton, "search");
-		searchButton.setAttribute("aria-label", "Search events");
-
-		const performSearch = () => {
-			currentSearch = searchEl.value;
-			container.empty();
-			const newRenderChildren = renderTimelineEvents(
-				container,
-				events,
-				plugin,
-				sourcePath,
-				currentOrder,
-				currentSearch
-			);
-
-			if (plugin instanceof TimelinePlugin) {
-				newRenderChildren.forEach((child) => plugin.addChild(child));
-			}
-		};
-
-		searchButton.addEventListener("click", performSearch);
-		searchEl.addEventListener("keypress", (e) => {
-			if (e.key === "Enter") {
-				performSearch();
-			}
-		});
-
-		const orderButton = headerEl.createEl("button", {
-			cls: "timeline-order-toggle",
-		});
-		updateOrderButton(orderButton, currentOrder);
-
-		orderButton.addEventListener("click", () => {
-			currentOrder = currentOrder === "asc" ? "desc" : "asc";
-			container.empty();
-			const newRenderChildren = renderTimelineEvents(
-				container,
-				events,
-				plugin,
-				sourcePath,
-				currentOrder,
-				currentSearch
-			);
-
-			if (plugin instanceof TimelinePlugin) {
-				newRenderChildren.forEach((child) => plugin.addChild(child));
-			}
-		});
-	}
-
-	const timeline = container.createEl("div", { cls: "timeline" });
+	let filteredEvents = events;
 	const renderChildren: TimelineEventContent[] = [];
 
-	let filteredEvents = events;
-	if (currentSearch) {
-		const searchLower = currentSearch.toLowerCase();
-		filteredEvents = events.filter(event => 
-			event.title.toLowerCase().includes(searchLower) ||
-			event.content.toLowerCase().includes(searchLower)
-		);
+	if ((plugin as TimelinePlugin).settings.showHeaderButtons) {
+		const headerEl = container.createEl("div", { cls: TIMELINE_CLASSES.TIMELINE_HEADER });
+
+		const search = new TimelineSearch(headerEl, (newSearchQuery) => {
+			container.empty();
+			const newRenderChildren = renderTimelineEvents(
+				container,
+				events,
+				plugin,
+				sourcePath,
+				currentOrder,
+				newSearchQuery
+			);
+
+			if (plugin instanceof TimelinePlugin) {
+				newRenderChildren.forEach((child) => plugin.addChild(child));
+			}
+		}, searchQuery);
+
+		const orderToggle = new TimelineOrderToggle(headerEl, currentOrder, (newOrder) => {
+			container.empty();
+			const newRenderChildren = renderTimelineEvents(
+				container,
+				events,
+				plugin,
+				sourcePath,
+				newOrder,
+				search.getCurrentSearch()
+			);
+
+			if (plugin instanceof TimelinePlugin) {
+				newRenderChildren.forEach((child) => plugin.addChild(child));
+			}
+		});
+
+		filteredEvents = search.filterEvents(events);
+		filteredEvents = orderToggle.sortEvents(filteredEvents);
 	}
 
-	const sortedEvents = [...filteredEvents].sort((a, b) => {
-		const aDate = new Date(`${a.year}-${a.month || "01"}-${a.day || "01"}`);
-		const bDate = new Date(`${b.year}-${b.month || "01"}-${b.day || "01"}`);
-		const modifier = currentOrder === "asc" ? 1 : -1;
-		return (aDate.getTime() - bDate.getTime()) * modifier;
-	});
+	const timeline = container.createEl("div", { cls: TIMELINE_CLASSES.TIMELINE });
 
-	for (const event of sortedEvents) {
-		const eventEl = timeline.createEl("div", { cls: "timeline-event" });
-		const dateEl = eventEl.createEl("div", { cls: "timeline-date" });
-		dateEl.createEl("span", { cls: "timeline-year", text: event.year });
+	for (const event of filteredEvents) {
+		const eventEl = timeline.createEl("div", { cls: TIMELINE_CLASSES.TIMELINE_EVENT });
+		const dateEl = eventEl.createEl("div", { cls: TIMELINE_CLASSES.TIMELINE_DATE });
+		dateEl.createEl("span", { cls: TIMELINE_CLASSES.TIMELINE_YEAR, text: event.year });
 
 		if (event.month) {
 			const monthDisplay = new Intl.DateTimeFormat("en-US", {
@@ -139,15 +100,15 @@ export function renderTimelineEvents(
 				: monthDisplay;
 
 			dateEl.createEl("span", {
-				cls: "timeline-month",
+				cls: TIMELINE_CLASSES.TIMELINE_MONTH,
 				text: dateDisplay,
 			});
 		}
 
-		eventEl.createEl("div", { cls: "timeline-point" });
-		const contentEl = eventEl.createEl("div", { cls: "timeline-content" });
+		eventEl.createEl("div", { cls: TIMELINE_CLASSES.TIMELINE_POINT });
+		const contentEl = eventEl.createEl("div", { cls: TIMELINE_CLASSES.TIMELINE_CONTENT });
 		contentEl.createEl("h3", { text: event.title });
-		const markdownContent = contentEl.createDiv("timeline-markdown-content");
+		const markdownContent = contentEl.createDiv(TIMELINE_CLASSES.TIMELINE_MARKDOWN_CONTENT);
 		const renderChild = new TimelineEventContent(
 			markdownContent,
 			event.content,
@@ -158,13 +119,4 @@ export function renderTimelineEvents(
 	}
 
 	return renderChildren;
-}
-
-function updateOrderButton(button: HTMLElement, order: "asc" | "desc") {
-	button.empty();
-	setIcon(button, order === "asc" ? "arrow-up" : "arrow-down");
-	button.setAttribute(
-		"aria-label",
-		order === "asc" ? "Sorted oldest first" : "Sorted newest first"
-	);
 }
