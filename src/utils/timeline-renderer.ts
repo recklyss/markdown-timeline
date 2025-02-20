@@ -6,6 +6,7 @@ import {
 } from "obsidian";
 import { TIMELINE_CLASSES, TIMELINE_ORDER } from "../constants/timeline";
 
+import { TimelineAddButton } from "../components/TimelineAddButton";
 import { TimelineEvent } from "../types";
 import { TimelineOrderToggle } from "../components/TimelineOrderToggle";
 import TimelinePlugin from "../main";
@@ -78,6 +79,12 @@ export function renderTimelineEvents(
 				newRenderChildren.forEach((child) => plugin.addChild(child));
 			}
 		});
+
+		new TimelineAddButton(headerEl, plugin.app, (newEvent) => {
+			events.push(newEvent);
+			container.empty();
+			renderTimelineEvents(container, events, plugin, sourcePath, currentOrder, search.getCurrentSearch());
+		}, () => events.map(event => `# ${event.year}${event.month ? '-' + event.month : ''}${event.day ? '-' + event.day : ''}\n## ${event.title}\n${event.content}`).join('\n---\n'));
 
 		filteredEvents = search.filterEvents(events);
 		filteredEvents = orderToggle.sortEvents(filteredEvents);
