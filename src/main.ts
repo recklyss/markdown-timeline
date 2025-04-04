@@ -4,7 +4,7 @@ import { TimelineView, VIEW_TYPE_TIMELINE } from './views/TimelineView';
 import { Plugin } from 'obsidian';
 import { TimelineSettingTab } from './settings/SettingsTab';
 import { parseTimelineContent } from './utils/parser';
-import { renderTimelineEvents } from './utils/timeline-renderer';
+import { renderTimelineEvents, renderError } from './utils/timeline-renderer';
 import { sortTimelineEvents } from 'utils/sort';
 
 export default class TimelinePlugin extends Plugin {
@@ -22,11 +22,29 @@ export default class TimelinePlugin extends Plugin {
         );
 
         this.registerMarkdownCodeBlockProcessor('timeline', async (source, el, ctx) => {
-            const container = el.createEl('div', { cls: 'timeline-container' });
-            const events = parseTimelineContent(source);
-            const sortedEvents = sortTimelineEvents(events, this.settings.timelineOrder);
-            const renderChildren = renderTimelineEvents(container, sortedEvents, this, ctx.sourcePath);
-            renderChildren.forEach(child => this.addChild(child));
+            try {
+                const container = el.createEl('div', { cls: 'timeline-container' });
+                const events = parseTimelineContent(source);
+                const sortedEvents = sortTimelineEvents(events, this.settings.timelineOrder);
+                const renderChildren = renderTimelineEvents(container, sortedEvents, this, ctx.sourcePath);
+                renderChildren.forEach(child => this.addChild(child));
+            } catch (error) {
+                const container = el.createEl('div', { cls: 'timeline-container' });
+                if (error instanceof Error) {
+                    renderError(container, {
+                        message: error.name === 'TimelineValidationError' ? error.message : 'An error occurred while parsing the timeline',
+                        type: 'parse',
+                        details: error.message,
+                        line: (error as any).line
+                    });
+                } else {
+                    renderError(container, {
+                        message: 'An unexpected error occurred',
+                        type: 'parse',
+                        details: String(error)
+                    });
+                }
+            }
         });
     }
 

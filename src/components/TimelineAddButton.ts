@@ -24,7 +24,7 @@ export class AddEventModal extends Modal {
 		const dateInput = new Setting(contentEl)
 			.setName("Date")
 			.addText((text) => {
-				text.setPlaceholder("YYYY-MM-DD OR YYYY-MM OR YYYY");
+				text.setPlaceholder("YYYY[-MM[-DD]]");
 				text.inputEl.style.width = "100%";
 			});
 
@@ -58,9 +58,8 @@ export class AddEventModal extends Modal {
 					}
 					const dateParts = dateValue.split("-");
 					console.log("dateParts", dateParts);
-					const formattedDate = `${dateParts[0]}${
-						dateParts[1] ? "-" + dateParts[1] : ""
-					}${dateParts[2] ? "-" + dateParts[2] : ""}`;
+					const formattedDate = `${dateParts[0]}${dateParts[1] ? "-" + dateParts[1] : ""
+						}${dateParts[2] ? "-" + dateParts[2] : ""}`;
 					const titleValue =
 						titleInput.settingEl.querySelector("input")?.value ||
 						"";

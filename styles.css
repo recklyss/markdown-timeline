@@ -184,3 +184,62 @@ If your plugin does not need CSS, delete this file.
 	color: var(--text-normal);
 	background-color: var(--background-modifier-hover);
 }
+
+.timeline-error {
+	background-color: var(--background-modifier-error-rgb);
+	border-radius: 8px;
+	padding: 16px;
+	margin: 16px 0;
+	color: var(--text-normal);
+	border: 1px solid var(--background-modifier-border);
+}
+
+.timeline-error-header {
+	display: flex;
+	align-items: center;
+	gap: 8px;
+	margin-bottom: 12px;
+}
+
+.timeline-error-header .lucide-alert-triangle {
+	color: var(--color-orange);
+}
+
+.timeline-error-message {
+	font-weight: 600;
+	color: var(--color-red);
+}
+
+.timeline-error-details {
+	margin-bottom: 12px;
+	padding: 8px;
+	background-color: var(--background-secondary);
+	border-radius: 4px;
+	color: var(--text-muted);
+}
+
+.timeline-error-line {
+	margin-top: 4px;
+	font-family: var(--font-monospace);
+	font-size: 0.9em;
+	opacity: 0.8;
+	color: var(--text-accent);
+}
+
+.timeline-error-help {
+	margin-top: 16px;
+	padding-top: 12px;
+	border-top: 1px solid var(--background-modifier-border);
+	color: var(--text-muted);
+}
+
+.timeline-error-example {
+	margin-top: 8px;
+	padding: 12px;
+	background-color: var(--background-primary);
+	border-radius: 4px;
+	font-family: var(--font-monospace);
+	font-size: 0.9em;
+	color: var(--text-normal);
+	border: 1px solid var(--background-modifier-border);
+}

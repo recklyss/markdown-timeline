@@ -16,4 +16,23 @@ export interface TimelineEvent {
     day?: string;
     title: string;
     content: string;
+}
+
+export interface TimelineError {
+    message: string;
+    type: 'parse' | 'validation' | 'render';
+    details?: string;
+    line?: number;
+}
+
+export class TimelineValidationError extends Error {
+    constructor(
+        message: string,
+        public type: TimelineError['type'] = 'validation',
+        public details?: string,
+        public line?: number
+    ) {
+        super(message);
+        this.name = 'TimelineValidationError';
+    }
 } 
