@@ -7,7 +7,7 @@ import {
 import { TIMELINE_CLASSES, TIMELINE_ORDER } from "../constants/timeline";
 
 import { TimelineAddButton } from "../components/TimelineAddButton";
-import { TimelineEvent, TimelineError } from "../types";
+import { TimelineEvent, TimelineError, TimelineValidationError } from "../types";
 import { TimelineOrderToggle } from "../components/TimelineOrderToggle";
 import TimelinePlugin from "../main";
 import { TimelineSearch } from "../components/TimelineSearch";
@@ -131,25 +131,25 @@ export function renderTimelineEvents(
 
 		for (const event of filteredEvents) {
 			const eventEl = timeline.createEl("div", { cls: TIMELINE_CLASSES.TIMELINE_EVENT });
-			const dateEl = eventEl.createEl("div", { cls: TIMELINE_CLASSES.TIMELINE_DATE });
-			dateEl.createEl("span", { cls: TIMELINE_CLASSES.TIMELINE_YEAR, text: event.year });
 
+			// Create a container for date and point
+			const datePointContainer = eventEl.createEl("div", { cls: "timeline-date-point" });
+
+			const dateEl = datePointContainer.createEl("div", { cls: TIMELINE_CLASSES.TIMELINE_DATE });
+			let dateDisplay = event.year;
 			if (event.month) {
 				const monthDisplay = new Intl.DateTimeFormat("en-US", {
 					month: "short",
 				}).format(new Date(2000, parseInt(event.month) - 1));
 
-				const dateDisplay = event.day
-					? `${monthDisplay} ${event.day}`
-					: monthDisplay;
-
-				dateEl.createEl("span", {
-					cls: TIMELINE_CLASSES.TIMELINE_MONTH,
-					text: dateDisplay,
-				});
+				dateDisplay = event.day
+					? `${event.year} ${monthDisplay} ${event.day}`
+					: `${event.year} ${monthDisplay}`;
 			}
 
-			eventEl.createEl("div", { cls: TIMELINE_CLASSES.TIMELINE_POINT });
+			dateEl.createEl("span", { cls: TIMELINE_CLASSES.TIMELINE_YEAR, text: dateDisplay });
+
+			datePointContainer.createEl("div", { cls: TIMELINE_CLASSES.TIMELINE_POINT });
 			const contentEl = eventEl.createEl("div", { cls: TIMELINE_CLASSES.TIMELINE_CONTENT });
 			contentEl.createEl("h3", { text: event.title });
 			const markdownContent = contentEl.createDiv(TIMELINE_CLASSES.TIMELINE_MARKDOWN_CONTENT);
@@ -170,7 +170,7 @@ export function renderTimelineEvents(
 				message: error.name === 'TimelineValidationError' ? error.message : 'An error occurred while rendering the timeline',
 				type: 'render',
 				details: error.message,
-				line: (error as any).line
+				line: (error as TimelineValidationError).line
 			});
 		} else {
 			renderError(container, {
