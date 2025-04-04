@@ -22,17 +22,18 @@ If your plugin does not need CSS, delete this file.
 .timeline::before {
 	content: "";
 	position: absolute;
-	left: 100px;
+	left: 120px;
 	top: 0;
 	bottom: 0;
 	width: 4px;
-	background: var(--background-modifier-border);
+	background: var(--background-secondary);
 }
 
 .timeline-event {
 	position: relative;
-	margin-bottom: 30px;
+	margin-bottom: 24px;
 	padding-left: 120px;
+	min-width: 0;
 }
 
 .timeline-date-point {
@@ -40,22 +41,23 @@ If your plugin does not need CSS, delete this file.
 	left: 0;
 	display: flex;
 	align-items: center;
-	gap: 14px;
+	justify-content: flex-end;
+	height: 32px;
+	width: 105px;
 }
 
 .timeline-date {
-	width: 80px;
+	overflow: visible;
 	text-align: right;
-}
-
-.timeline-year {
-	color: var(--text-muted);
-	font-weight: bold;
+	color: var(--text-accent);
 	font-size: 0.9em;
-	white-space: nowrap;
+	white-space: wrap;
+	display: block;
 }
 
 .timeline-point {
+	position: absolute;
+	left: 114px;
 	width: 16px;
 	height: 16px;
 	border-radius: 50%;
@@ -67,6 +69,8 @@ If your plugin does not need CSS, delete this file.
 	background: var(--background-primary-alt);
 	border-radius: 4px;
 	padding: 15px;
+	margin-left: 20px;
+	overflow-wrap: break-word;
 }
 
 .timeline-content h3 {

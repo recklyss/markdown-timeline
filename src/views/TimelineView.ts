@@ -3,13 +3,13 @@ import { ItemView, WorkspaceLeaf } from 'obsidian';
 import TimelinePlugin from '../main';
 import { parseTimelineContent } from '../utils/parser';
 import { renderTimelineEvents } from '../utils/timeline-renderer';
-import { sortTimelineEvents } from '../utils/sort';
+import { sortTimelineEvents } from '../utils/dateUtils';
 
 export const VIEW_TYPE_TIMELINE = "timeline-view";
 
 export class TimelineView extends ItemView {
     private content = '';
-    
+
     constructor(
         leaf: WorkspaceLeaf,
         private plugin: TimelinePlugin

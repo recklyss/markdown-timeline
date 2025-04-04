@@ -6,8 +6,6 @@ export const TIMELINE_CLASSES = {
     TIMELINE_ORDER_TOGGLE: 'timeline-order-toggle',
     TIMELINE_EVENT: 'timeline-event',
     TIMELINE_DATE: 'timeline-date',
-    TIMELINE_YEAR: 'timeline-year',
-    TIMELINE_MONTH: 'timeline-month',
     TIMELINE_POINT: 'timeline-point',
     TIMELINE_CONTENT: 'timeline-content',
     TIMELINE_MARKDOWN_CONTENT: 'timeline-markdown-content'

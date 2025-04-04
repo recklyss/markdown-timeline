@@ -11,6 +11,7 @@ import { TimelineEvent, TimelineError, TimelineValidationError } from "../types"
 import { TimelineOrderToggle } from "../components/TimelineOrderToggle";
 import TimelinePlugin from "../main";
 import { TimelineSearch } from "../components/TimelineSearch";
+import { formatDate } from "./formatDate";
 
 export class TimelineEventContent extends MarkdownRenderChild {
 	constructor(
@@ -134,20 +135,8 @@ export function renderTimelineEvents(
 
 			// Create a container for date and point
 			const datePointContainer = eventEl.createEl("div", { cls: "timeline-date-point" });
-
-			const dateEl = datePointContainer.createEl("div", { cls: TIMELINE_CLASSES.TIMELINE_DATE });
-			let dateDisplay = event.year;
-			if (event.month) {
-				const monthDisplay = new Intl.DateTimeFormat("en-US", {
-					month: "short",
-				}).format(new Date(2000, parseInt(event.month) - 1));
-
-				dateDisplay = event.day
-					? `${event.year} ${monthDisplay} ${event.day}`
-					: `${event.year} ${monthDisplay}`;
-			}
-
-			dateEl.createEl("span", { cls: TIMELINE_CLASSES.TIMELINE_YEAR, text: dateDisplay });
+			const dateDisplay = formatDate(event, plugin as TimelinePlugin);
+			datePointContainer.createEl("div", { cls: TIMELINE_CLASSES.TIMELINE_DATE, text: dateDisplay });
 
 			datePointContainer.createEl("div", { cls: TIMELINE_CLASSES.TIMELINE_POINT });
 			const contentEl = eventEl.createEl("div", { cls: TIMELINE_CLASSES.TIMELINE_CONTENT });

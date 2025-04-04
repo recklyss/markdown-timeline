@@ -24,7 +24,9 @@ function validateDate(year: string, month?: string, day?: string, lineNumber?: n
 
         if (day) {
             const dayNum = parseInt(day);
-            const daysInMonth = new Date(yearNum, monthNum, 0).getDate();
+            // Use absolute year for date validation since negative years aren't supported by Date
+            const absYear = Math.abs(yearNum);
+            const daysInMonth = new Date(absYear, monthNum, 0).getDate();
             if (isNaN(dayNum) || dayNum < 1 || dayNum > daysInMonth) {
                 throw new TimelineValidationError(
                     'Invalid day format',
@@ -71,13 +73,24 @@ export function parseTimelineContent(content: string): TimelineEvent[] {
             line = line.trim();
             if (!foundDate && line.startsWith('# ')) {
                 const dateStr = line.replace('# ', '');
-                const dateParts = dateStr.split('-');
+
+                // Handle negative years in the date format
+                let dateParts: string[];
+                if (dateStr.startsWith('-')) {
+                    // For negative years, keep the minus sign with the year
+                    const yearPart = dateStr.substring(0, dateStr.indexOf('-', 1) === -1 ?
+                        dateStr.length : dateStr.indexOf('-', 1));
+                    const restPart = dateStr.substring(yearPart.length);
+                    dateParts = [yearPart, ...restPart.split('-').filter(p => p)];
+                } else {
+                    dateParts = dateStr.split('-');
+                }
 
                 if (dateParts.length === 0 || dateParts.length > 3) {
                     throw new TimelineValidationError(
                         'Invalid date format',
                         'parse',
-                        'Date should be in format: # YYYY[-MM[-DD]]',
+                        'Date should be in format: # [-]YYYY[-MM[-DD]], supports negative years for BC events',
                         currentLineNumber
                     );
                 }

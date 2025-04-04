@@ -2,6 +2,7 @@ import { TIMELINE_ARIA_LABELS, TIMELINE_CLASSES, TIMELINE_ORDER } from "../const
 
 import { TimelineEvent } from "../types";
 import { setIcon } from "obsidian";
+import { sortTimelineEvents } from "../utils/dateUtils";
 
 export class TimelineOrderToggle {
     private orderButton: HTMLButtonElement;
@@ -26,8 +27,8 @@ export class TimelineOrderToggle {
 
     private setupEventListeners() {
         this.orderButton.addEventListener("click", () => {
-            this.currentOrder = this.currentOrder === TIMELINE_ORDER.ASC 
-                ? TIMELINE_ORDER.DESC 
+            this.currentOrder = this.currentOrder === TIMELINE_ORDER.ASC
+                ? TIMELINE_ORDER.DESC
                 : TIMELINE_ORDER.ASC;
             this.updateOrderButton();
             this.onOrderChange(this.currentOrder);
@@ -39,8 +40,8 @@ export class TimelineOrderToggle {
         setIcon(this.orderButton, this.currentOrder === TIMELINE_ORDER.ASC ? "arrow-up" : "arrow-down");
         this.orderButton.setAttribute(
             "aria-label",
-            this.currentOrder === TIMELINE_ORDER.ASC 
-                ? TIMELINE_ARIA_LABELS.ORDER_ASC 
+            this.currentOrder === TIMELINE_ORDER.ASC
+                ? TIMELINE_ARIA_LABELS.ORDER_ASC
                 : TIMELINE_ARIA_LABELS.ORDER_DESC
         );
     }
@@ -50,11 +51,6 @@ export class TimelineOrderToggle {
     }
 
     public sortEvents(events: TimelineEvent[]): TimelineEvent[] {
-        return [...events].sort((a, b) => {
-            const aDate = new Date(`${a.year}-${a.month || "01"}-${a.day || "01"}`);
-            const bDate = new Date(`${b.year}-${b.month || "01"}-${b.day || "01"}`);
-            const modifier = this.currentOrder === TIMELINE_ORDER.ASC ? 1 : -1;
-            return (aDate.getTime() - bDate.getTime()) * modifier;
-        });
+        return sortTimelineEvents(events, this.currentOrder);
     }
 } 

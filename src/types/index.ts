@@ -2,12 +2,14 @@ export interface TimelinePluginSettings {
     defaultView: string;
     timelineOrder: 'asc' | 'desc';
     showHeaderButtons: boolean;
+    dateFormat: string;
 }
 
 export const DEFAULT_SETTINGS: TimelinePluginSettings = {
-    defaultView: 'basic',
+    defaultView: 'timeline',
     timelineOrder: 'asc',
-    showHeaderButtons: true
+    showHeaderButtons: true,
+    dateFormat: 'YYYY-MM-DD'
 };
 
 export interface TimelineEvent {

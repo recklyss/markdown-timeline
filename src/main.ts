@@ -5,7 +5,7 @@ import { Plugin } from 'obsidian';
 import { TimelineSettingTab } from './settings/SettingsTab';
 import { parseTimelineContent } from './utils/parser';
 import { renderTimelineEvents, renderError } from './utils/timeline-renderer';
-import { sortTimelineEvents } from 'utils/sort';
+import { sortTimelineEvents } from './utils/dateUtils';
 
 export default class TimelinePlugin extends Plugin {
     settings: TimelinePluginSettings;

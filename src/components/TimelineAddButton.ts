@@ -56,10 +56,24 @@ export class AddEventModal extends Modal {
 						console.error("Date input is empty");
 						return;
 					}
-					const dateParts = dateValue.split("-");
+
+					// Handle negative years correctly
+					let dateParts: string[];
+					if (dateValue.startsWith('-')) {
+						// For negative years, keep the minus sign with the year
+						const yearPart = dateValue.substring(0, dateValue.indexOf('-', 1) === -1 ?
+							dateValue.length : dateValue.indexOf('-', 1));
+						const restPart = dateValue.substring(yearPart.length);
+						dateParts = [yearPart, ...restPart.split('-').filter(p => p)];
+					} else {
+						dateParts = dateValue.split('-');
+					}
+
 					console.log("dateParts", dateParts);
 					const formattedDate = `${dateParts[0]}${dateParts[1] ? "-" + dateParts[1] : ""
-						}${dateParts[2] ? "-" + dateParts[2] : ""}`;
+						}${dateParts[2] ? "-" + dateParts[2] : ""
+						}`;
+
 					const titleValue =
 						titleInput.settingEl.querySelector("input")?.value ||
 						"";
