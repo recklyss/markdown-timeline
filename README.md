@@ -1,18 +1,74 @@
-# Markdown Timeline
+# Obsidian Timeline
 
-Convert markdown files into timeline visualizations within Obsidian.
-
-![Timeline Example](./example.png)
+A plugin for [Obsidian](https://obsidian.md) that creates a timeline view of your notes.
 
 ## Features
 
-- Convert markdown content into visual timelines
-- Simple and intuitive markdown syntax
-- Interactive timeline view with search and sort capabilities
-- Customizable styling
-- Chronological sorting of events
-- Search functionality to filter events by keywords
-- Configurable timeline header controls
+- Create beautiful timelines from your markdown notes
+- Support for both positive and negative years (BCE/CE dates)
+- Customizable date formats
+- Ascending or descending timeline order
+- Search and filter timeline events
+- Add new events directly from the timeline view
+
+## Usage
+
+Create a timeline by using the `timeline` code block:
+
+```markdown
+```timeline
+# 2024-03-21
+## Launch of Timeline Plugin
+First release of the Timeline plugin for Obsidian.
+
+---
+
+# -500-03-15
+## Ancient Event
+This event happened in 500 BCE.
+```
+```
+
+### Date Format Options
+
+You can customize how dates are displayed in the timeline through the plugin settings. The following format tokens are supported:
+
+- `YYYY`: Year (supports both positive and negative years)
+  - Examples: "2024", "-500", "-50"
+- `MM`: Month as a zero-padded number (01-12)
+- `MMM`: Month as a short name (Jan, Feb, Mar...)
+- `MMMM`: Month as a full name (January, February, March...)
+- `DD`: Day of the month as a zero-padded number (01-31)
+
+You can combine these tokens with any separator. Some examples:
+
+- `YYYY-MM-DD` → "2024-03-21" or "-500-03-15"
+- `DD MMM YYYY` → "21 Mar 2024" or "15 Mar -500"
+- `MMMM DD, YYYY` → "March 21, 2024" or "March 15, -500"
+- `YYYY/MM/DD` → "2024/03/21" or "-500/03/15"
+
+The format will automatically adapt to handle missing month or day values:
+- Year only: "-500" (regardless of format)
+- Year and month: "Mar -500" (for format "MMM YYYY")
+- Complete date: "March 15, -500" (for format "MMMM DD, YYYY")
+
+### Timeline Entry Format
+
+Each timeline entry should follow this format:
+
+```markdown
+# YYYY[-MM[-DD]]
+## Title
+Content (in markdown)
+```
+
+- The date line starts with a single `#` and can include:
+  - Year (required): Any number, including negative years for BCE
+  - Month (optional): 1-12
+  - Day (optional): 1-31
+- The title line starts with `##`
+- The content can include any valid markdown
+- Entries are separated by `---`
 
 ## Installation
 
@@ -21,61 +77,13 @@ Convert markdown files into timeline visualizations within Obsidian.
 3. Click Browse and search for "Timeline"
 4. Install the plugin and enable it
 
-## Usage
+## Settings
 
-### Basic Timeline Creation
-
-Create a timeline by using a code block with the `timeline` language identifier:
-
-~~~
-```timeline
-# 2024-03-15
-## Event Title
-Content
-![[some other notes]]
----
-
-# 2023-03
-## Event Title
-Content
-![[some other notes]]
----
-
-# 2024-01-01
-## Another Event
-More content here
-```
-~~~
-
-### Syntax Structure
-
-Each timeline event follows this structure:
-
-- `# YYYY-MM-DD` - The date of the event, the year is required, the month and day are optional
-- `## Title` - The event title
-- Content - The event description, can be markdown content, also support wikilink, try `[[some article]]` and `![[some notes]]`
-- `---` - Separator between events
-
-### Timeline Controls
-
-Each timeline includes interactive controls in the header:
-- Search box to filter events by keywords (searches in titles and content)
-- Sort button to toggle between ascending (oldest first) and descending (newest first) order
-
-### Settings
-
-The plugin settings allow you to:
-- Set the default sort order for new timelines
-- Show/hide the timeline header controls
-- Each timeline maintains its own sort order independently
-
-## Support
-
-If you encounter any issues or have suggestions:
-1. Check the [GitHub Issues](https://github.com/recklyss/markdown-timeline/issues)
-2. Create a new issue if needed
+- **Date Format**: Choose how dates are displayed in the timeline
+- **Default Sort Order**: Choose whether to show oldest or newest events first
+- **Show Header Buttons**: Toggle visibility of timeline operation buttons
 
 ## License
 
-MIT License - see [LICENSE](LICENSE) file for details
+[MIT License](LICENSE)
 
