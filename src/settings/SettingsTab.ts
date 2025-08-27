@@ -2,14 +2,27 @@ import { App, PluginSettingTab, Setting } from 'obsidian';
 
 import TimelinePlugin from '../main';
 
+/**
+ * Settings tab for the Timeline plugin
+ * Provides user interface for configuring plugin options
+ */
 export class TimelineSettingTab extends PluginSettingTab {
+    /** Reference to the main plugin instance */
     plugin: TimelinePlugin;
 
     constructor(app: App, plugin: TimelinePlugin) {
         super(app, plugin);
+        
+        if (!plugin) {
+            throw new Error('plugin must be provided');
+        }
+        
         this.plugin = plugin;
     }
 
+    /**
+     * Displays the settings interface
+     */
     display(): void {
         const { containerEl } = this;
         containerEl.empty();

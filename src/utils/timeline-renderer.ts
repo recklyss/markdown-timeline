@@ -13,6 +13,9 @@ import TimelinePlugin from "../main";
 import { TimelineSearch } from "../components/TimelineSearch";
 import { formatDate } from "./formatDate";
 
+/**
+ * Renders timeline event content as markdown
+ */
 export class TimelineEventContent extends MarkdownRenderChild {
 	constructor(
 		container: HTMLElement,
@@ -34,7 +37,19 @@ export class TimelineEventContent extends MarkdownRenderChild {
 	}
 }
 
+/**
+ * Renders error information in the timeline container
+ * @param container - HTML element to render error into
+ * @param error - Error information to display
+ */
 export function renderError(container: HTMLElement, error: TimelineError) {
+	if (!container || !(container instanceof HTMLElement)) {
+		throw new Error('container must be a valid HTMLElement');
+	}
+	if (!error) {
+		throw new Error('error must be provided');
+	}
+	
 	const errorEl = container.createEl("div", { cls: "timeline-error" });
 
 	const errorHeader = errorEl.createEl("div", { cls: "timeline-error-header" });
@@ -70,6 +85,16 @@ Event content goes here...
 More content...` });
 }
 
+/**
+ * Renders timeline events into the specified container
+ * @param container - HTML element to render timeline into
+ * @param events - Array of timeline events to render
+ * @param plugin - Plugin instance for settings and functionality
+ * @param sourcePath - Source file path for markdown rendering
+ * @param initialOrder - Initial sort order for events
+ * @param searchQuery - Initial search query to filter events
+ * @returns Array of render children for proper cleanup
+ */
 export function renderTimelineEvents(
 	container: HTMLElement,
 	events: TimelineEvent[],
@@ -78,12 +103,36 @@ export function renderTimelineEvents(
 	initialOrder?: typeof TIMELINE_ORDER.ASC | typeof TIMELINE_ORDER.DESC,
 	searchQuery = ""
 ): TimelineEventContent[] {
+	if (!container || !(container instanceof HTMLElement)) {
+		throw new Error('container must be a valid HTMLElement');
+	}
+	if (!Array.isArray(events)) {
+		throw new Error('events must be an array');
+	}
+	if (!plugin) {
+		throw new Error('plugin must be provided');
+	}
+	if (typeof sourcePath !== 'string') {
+		throw new Error('sourcePath must be a string');
+	}
+	if (initialOrder && !Object.values(TIMELINE_ORDER).includes(initialOrder)) {
+		throw new Error('initialOrder must be a valid timeline order');
+	}
+	if (typeof searchQuery !== 'string') {
+		throw new Error('searchQuery must be a string');
+	}
+	
 	try {
-		const currentOrder = initialOrder ?? (plugin as TimelinePlugin).settings.timelineOrder;
+		// Type guard to ensure we have a TimelinePlugin instance
+		if (!(plugin instanceof TimelinePlugin)) {
+			throw new Error("Invalid plugin instance");
+		}
+		
+		const currentOrder = initialOrder ?? plugin.settings.timelineOrder;
 		let filteredEvents = events;
 		const renderChildren: TimelineEventContent[] = [];
 
-		if ((plugin as TimelinePlugin).settings.showHeaderButtons) {
+		if (plugin.settings.showHeaderButtons) {
 			const headerEl = container.createEl("div", { cls: TIMELINE_CLASSES.TIMELINE_HEADER });
 
 			const search = new TimelineSearch(headerEl, (newSearchQuery) => {
@@ -97,9 +146,7 @@ export function renderTimelineEvents(
 					newSearchQuery
 				);
 
-				if (plugin instanceof TimelinePlugin) {
-					newRenderChildren.forEach((child) => plugin.addChild(child));
-				}
+				newRenderChildren.forEach((child) => plugin.addChild(child));
 			}, searchQuery);
 
 			const orderToggle = new TimelineOrderToggle(headerEl, currentOrder, (newOrder) => {
@@ -113,9 +160,7 @@ export function renderTimelineEvents(
 					search.getCurrentSearch()
 				);
 
-				if (plugin instanceof TimelinePlugin) {
-					newRenderChildren.forEach((child) => plugin.addChild(child));
-				}
+				newRenderChildren.forEach((child) => plugin.addChild(child));
 			});
 
 			new TimelineAddButton(headerEl, plugin.app, (newEvent) => {
@@ -155,11 +200,12 @@ export function renderTimelineEvents(
 	} catch (error) {
 		container.empty();
 		if (error instanceof Error) {
+			const isValidationError = error.name === 'TimelineValidationError';
 			renderError(container, {
-				message: error.name === 'TimelineValidationError' ? error.message : 'An error occurred while rendering the timeline',
+				message: isValidationError ? error.message : 'An error occurred while rendering the timeline',
 				type: 'render',
 				details: error.message,
-				line: (error as TimelineValidationError).line
+				line: isValidationError ? (error as TimelineValidationError).line : undefined
 			});
 		} else {
 			renderError(container, {

@@ -1,15 +1,32 @@
 import { TimelineEvent, TimelineValidationError } from '../types';
 
+/**
+ * Validates date components for timeline events
+ * @param year - Year string to validate
+ * @param month - Optional month string to validate
+ * @param day - Optional day string to validate
+ * @param lineNumber - Line number for error reporting
+ * @throws TimelineValidationError if date validation fails
+ */
 function validateDate(year: string, month?: string, day?: string, lineNumber?: number) {
-    const yearNum = parseInt(year);
-    if (isNaN(yearNum)) {
-        throw new TimelineValidationError(
-            'Invalid year format',
-            'validation',
-            `Year "${year}" is not a valid number`,
-            lineNumber
-        );
-    }
+  if (!year || typeof year !== 'string') {
+    throw new TimelineValidationError(
+      'Invalid year parameter',
+      'validation',
+      'Year must be a non-empty string',
+      lineNumber
+    );
+  }
+  
+  const yearNum = parseInt(year);
+  if (isNaN(yearNum)) {
+    throw new TimelineValidationError(
+      'Invalid year format',
+      'validation',
+      `Year "${year}" is not a valid number`,
+      lineNumber
+    );
+  }
 
     if (month) {
         const monthNum = parseInt(month);
@@ -39,7 +56,34 @@ function validateDate(year: string, month?: string, day?: string, lineNumber?: n
     }
 }
 
+/**
+ * Parses markdown content into timeline events
+ * @param content - Raw markdown content to parse
+ * @returns Array of parsed timeline events
+ * @throws TimelineValidationError if parsing fails
+ */
 export function parseTimelineContent(content: string): TimelineEvent[] {
+    validateContentNotEmpty(content);
+    
+    const sections = content.split('---').filter(section => section.trim());
+    validateSectionsExist(sections);
+    
+    const events: TimelineEvent[] = [];
+    let currentLineNumber = 1;
+    
+    sections.forEach(section => {
+        const event = parseTimelineSection(section, currentLineNumber);
+        events.push(event);
+        currentLineNumber += section.split('\n').length + 1; // Account for separator
+    });
+
+    return events;
+}
+
+/**
+ * Validates that the content is not empty
+ */
+function validateContentNotEmpty(content: string): void {
     if (!content.trim()) {
         throw new TimelineValidationError(
             'Empty timeline content',
@@ -47,10 +91,12 @@ export function parseTimelineContent(content: string): TimelineEvent[] {
             'Please provide some timeline events'
         );
     }
+}
 
-    const events: TimelineEvent[] = [];
-    const sections = content.split('---').filter(section => section.trim());
-
+/**
+ * Validates that at least one section exists
+ */
+function validateSectionsExist(sections: string[]): void {
     if (sections.length === 0) {
         throw new TimelineValidationError(
             'No timeline events found',
@@ -58,107 +104,130 @@ export function parseTimelineContent(content: string): TimelineEvent[] {
             'Timeline should contain at least one event separated by ---'
         );
     }
+}
 
-    let currentLineNumber = 1;
-    sections.forEach(section => {
-        const lines = section.trim().split('\n');
-        const currentEvent: Partial<TimelineEvent> = {};
-        const contentLines: string[] = [];
+/**
+ * Parses a single timeline section into a TimelineEvent
+ */
+function parseTimelineSection(section: string, startLineNumber: number): TimelineEvent {
+    const lines = section.trim().split('\n');
+    const currentEvent: Partial<TimelineEvent> = {};
+    const contentLines: string[] = [];
 
-        let foundDate = false;
-        let foundTitle = false;
-        const sectionStartLine = currentLineNumber;
+    let foundDate = false;
+    let foundTitle = false;
+    let currentLineNumber = startLineNumber;
 
-        lines.forEach(line => {
-            line = line.trim();
-            if (!foundDate && line.startsWith('# ')) {
-                const dateStr = line.replace('# ', '');
-
-                // Handle negative years in the date format
-                let dateParts: string[];
-                if (dateStr.startsWith('-')) {
-                    // For negative years, keep the minus sign with the year
-                    const yearPart = dateStr.substring(0, dateStr.indexOf('-', 1) === -1 ?
-                        dateStr.length : dateStr.indexOf('-', 1));
-                    const restPart = dateStr.substring(yearPart.length);
-                    dateParts = [yearPart, ...restPart.split('-').filter(p => p)];
-                } else {
-                    dateParts = dateStr.split('-');
-                }
-
-                if (dateParts.length === 0 || dateParts.length > 3) {
-                    throw new TimelineValidationError(
-                        'Invalid date format',
-                        'parse',
-                        'Date should be in format: # [-]YYYY[-MM[-DD]], supports negative years for BC events',
-                        currentLineNumber
-                    );
-                }
-
-                currentEvent.year = dateParts[0];
-                if (dateParts.length > 1) {
-                    currentEvent.month = dateParts[1];
-                }
-                if (dateParts.length > 2) {
-                    currentEvent.day = dateParts[2];
-                }
-
-                validateDate(
-                    currentEvent.year,
-                    currentEvent.month,
-                    currentEvent.day,
-                    currentLineNumber
-                );
-
-                foundDate = true;
-            } else if (!foundTitle && line.startsWith('## ')) {
-                currentEvent.title = line.replace('## ', '').trim();
-                if (!currentEvent.title) {
-                    throw new TimelineValidationError(
-                        'Empty title',
-                        'parse',
-                        'Event title cannot be empty',
-                        currentLineNumber
-                    );
-                }
-                foundTitle = true;
-            } else if (line) {
-                contentLines.push(line);
-            }
-            currentLineNumber++;
-        });
-
-        if (!foundDate) {
-            throw new TimelineValidationError(
-                'Missing date',
-                'parse',
-                'Each event must start with a date (# YYYY[-MM[-DD]])',
-                sectionStartLine
-            );
+    lines.forEach(line => {
+        line = line.trim();
+        if (!foundDate && line.startsWith('# ')) {
+            parseDateLine(line, currentEvent, currentLineNumber);
+            foundDate = true;
+        } else if (!foundTitle && line.startsWith('## ')) {
+            parseTitleLine(line, currentEvent, currentLineNumber);
+            foundTitle = true;
+        } else if (line) {
+            contentLines.push(line);
         }
-
-        if (!foundTitle) {
-            throw new TimelineValidationError(
-                'Missing title',
-                'parse',
-                'Each event must have a title (## Title)',
-                sectionStartLine
-            );
-        }
-
-        if (contentLines.length === 0) {
-            throw new TimelineValidationError(
-                'Missing content',
-                'parse',
-                'Each event must have some content',
-                sectionStartLine
-            );
-        }
-
-        currentEvent.content = contentLines.join('\n');
-        events.push(currentEvent as TimelineEvent);
-        currentLineNumber++; // Account for the separator
+        currentLineNumber++;
     });
 
-    return events;
+    validateRequiredFields(foundDate, foundTitle, contentLines.length, startLineNumber);
+    
+    currentEvent.content = contentLines.join('\n');
+    return currentEvent as TimelineEvent;
+}
+
+/**
+ * Parses a date line and extracts year, month, day
+ */
+function parseDateLine(line: string, currentEvent: Partial<TimelineEvent>, lineNumber: number): void {
+    const dateStr = line.replace('# ', '');
+    const dateParts = parseDateString(dateStr);
+    
+    if (dateParts.length === 0 || dateParts.length > 3) {
+        throw new TimelineValidationError(
+            'Invalid date format',
+            'parse',
+            'Date should be in format: # [-]YYYY[-MM[-DD]], supports negative years for BC events',
+            lineNumber
+        );
+    }
+
+    currentEvent.year = dateParts[0];
+    if (dateParts.length > 1) {
+        currentEvent.month = dateParts[1];
+    }
+    if (dateParts.length > 2) {
+        currentEvent.day = dateParts[2];
+    }
+
+    validateDate(
+        currentEvent.year,
+        currentEvent.month,
+        currentEvent.day,
+        lineNumber
+    );
+}
+
+/**
+ * Parses a date string, handling negative years correctly
+ */
+function parseDateString(dateStr: string): string[] {
+    if (dateStr.startsWith('-')) {
+        // For negative years, keep the minus sign with the year
+        const yearPart = dateStr.substring(0, dateStr.indexOf('-', 1) === -1 ?
+            dateStr.length : dateStr.indexOf('-', 1));
+        const restPart = dateStr.substring(yearPart.length);
+        return [yearPart, ...restPart.split('-').filter(p => p)];
+    } else {
+        return dateStr.split('-');
+    }
+}
+
+/**
+ * Parses a title line
+ */
+function parseTitleLine(line: string, currentEvent: Partial<TimelineEvent>, lineNumber: number): void {
+    currentEvent.title = line.replace('## ', '').trim();
+    if (!currentEvent.title) {
+        throw new TimelineValidationError(
+            'Empty title',
+            'parse',
+            'Event title cannot be empty',
+            lineNumber
+        );
+    }
+}
+
+/**
+ * Validates that all required fields are present
+ */
+function validateRequiredFields(foundDate: boolean, foundTitle: boolean, contentLength: number, startLine: number): void {
+    if (!foundDate) {
+        throw new TimelineValidationError(
+            'Missing date',
+            'parse',
+            'Each event must start with a date (# YYYY[-MM[-DD]])',
+            startLine
+        );
+    }
+
+    if (!foundTitle) {
+        throw new TimelineValidationError(
+            'Missing title',
+            'parse',
+            'Each event must have a title (## Title)',
+            startLine
+        );
+    }
+
+    if (contentLength === 0) {
+        throw new TimelineValidationError(
+            'Missing content',
+            'parse',
+            'Each event must have some content',
+            startLine
+        );
+    }
 } 

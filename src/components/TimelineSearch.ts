@@ -3,6 +3,9 @@ import { TIMELINE_ARIA_LABELS, TIMELINE_CLASSES } from "../constants/timeline";
 import { TimelineEvent } from "../types";
 import { setIcon } from "obsidian";
 
+/**
+ * Component for searching timeline events
+ */
 export class TimelineSearch {
     private searchEl: HTMLInputElement;
     private searchButton: HTMLButtonElement;
@@ -13,6 +16,16 @@ export class TimelineSearch {
         private onSearch: (searchQuery: string) => void,
         initialSearchQuery: string = ""
     ) {
+        if (!container || !(container instanceof HTMLElement)) {
+            throw new Error('container must be a valid HTMLElement');
+        }
+        if (!onSearch || typeof onSearch !== 'function') {
+            throw new Error('onSearch must be a valid function');
+        }
+        if (typeof initialSearchQuery !== 'string') {
+            throw new Error('initialSearchQuery must be a string');
+        }
+        
         this.currentSearch = initialSearchQuery;
         this.initializeSearch();
     }

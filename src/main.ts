@@ -7,10 +7,19 @@ import { parseTimelineContent } from './utils/parser';
 import { renderTimelineEvents, renderError } from './utils/timeline-renderer';
 import { sortTimelineEvents } from './utils/dateUtils';
 
+/**
+ * Main plugin class for the Markdown Timeline plugin
+ * Handles plugin lifecycle, settings, and timeline processing
+ */
 export default class TimelinePlugin extends Plugin {
+    /** Plugin settings configuration */
     settings: TimelinePluginSettings;
+    /** Timeline view instance */
     private timelineView: TimelineView | null = null;
 
+    /**
+     * Plugin initialization - called when the plugin is loaded
+     */
     async onload() {
         await this.loadSettings();
 
@@ -48,14 +57,23 @@ export default class TimelinePlugin extends Plugin {
         });
     }
 
+    /**
+     * Load plugin settings from Obsidian's data storage
+     */
     async loadSettings() {
         this.settings = Object.assign({}, DEFAULT_SETTINGS, await this.loadData());
     }
 
+    /**
+     * Save plugin settings to Obsidian's data storage
+     */
     async saveSettings() {
         await this.saveData(this.settings);
     }
 
+    /**
+     * Activate the timeline view in the workspace
+     */
     async activateView() {
         const { workspace } = this.app;
 

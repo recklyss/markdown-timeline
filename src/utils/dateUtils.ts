@@ -3,8 +3,15 @@ import { TimelineEvent } from '../types';
 /**
  * Compares two timeline events by their dates
  * Handles both positive and negative years correctly
+ * @param a - First timeline event to compare
+ * @param b - Second timeline event to compare
+ * @returns Negative if a < b, positive if a > b, 0 if equal
  */
 export function compareTimelineEvents(a: TimelineEvent, b: TimelineEvent): number {
+  if (!a || !b) {
+    throw new Error('Both timeline events must be provided');
+  }
+  
   // Convert to numbers for comparison
   const yearA = parseInt(a.year);
   const yearB = parseInt(b.year);
@@ -31,11 +38,18 @@ export function compareTimelineEvents(a: TimelineEvent, b: TimelineEvent): numbe
 
 /**
  * Sorts timeline events by date
- * @param events Array of timeline events to sort
- * @param order Sort order ('asc' or 'desc')
+ * @param events - Array of timeline events to sort
+ * @param order - Sort order ('asc' or 'desc')
  * @returns Sorted array of timeline events
  */
 export function sortTimelineEvents(events: TimelineEvent[], order: 'asc' | 'desc'): TimelineEvent[] {
+  if (!Array.isArray(events)) {
+    throw new Error('events must be an array');
+  }
+  if (!['asc', 'desc'].includes(order)) {
+    throw new Error('order must be either "asc" or "desc"');
+  }
+  
   const modifier = order === 'desc' ? -1 : 1;
   return [...events].sort((a, b) => compareTimelineEvents(a, b) * modifier);
 } 

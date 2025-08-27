@@ -2,6 +2,9 @@ import { App, Modal, Setting, TFile, setIcon } from "obsidian";
 
 import { TimelineEvent } from "../types";
 
+/**
+ * Modal for adding new timeline events
+ */
 export class AddEventModal extends Modal {
 	private onSubmit: (event: TimelineEvent) => void;
 	private getExistingEventsContent: () => string;
@@ -12,6 +15,14 @@ export class AddEventModal extends Modal {
 		getExistingEventsContent: () => string
 	) {
 		super(app);
+		
+		if (!onSubmit || typeof onSubmit !== 'function') {
+			throw new Error('onSubmit must be a valid function');
+		}
+		if (!getExistingEventsContent || typeof getExistingEventsContent !== 'function') {
+			throw new Error('getExistingEventsContent must be a valid function');
+		}
+		
 		this.onSubmit = onSubmit;
 		this.getExistingEventsContent = getExistingEventsContent;
 	}
@@ -49,11 +60,9 @@ export class AddEventModal extends Modal {
 				.setButtonText("Add Event")
 				.setCta()
 				.onClick(() => {
-					console.log("Add Event button clicked");
 					const dateValue =
 						dateInput.settingEl.querySelector("input")?.value || "";
 					if (!dateValue) {
-						console.error("Date input is empty");
 						return;
 					}
 
@@ -69,7 +78,7 @@ export class AddEventModal extends Modal {
 						dateParts = dateValue.split('-');
 					}
 
-					console.log("dateParts", dateParts);
+
 					const formattedDate = `${dateParts[0]}${dateParts[1] ? "-" + dateParts[1] : ""
 						}${dateParts[2] ? "-" + dateParts[2] : ""
 						}`;
@@ -92,7 +101,7 @@ export class AddEventModal extends Modal {
 
 					const newEventContent = `# ${formattedDate}\n## ${titleValue}\n${contentValue}`;
 					const toBeWrittenWholeContent = `${newEventContent}\n---\n${this.getExistingEventsContent()}`;
-					console.log("New Event Content:", newEventContent);
+
 					this.updateTimelineBlock(newEventContent);
 					const newEvent: TimelineEvent = {
 						year: dateParts[0],
@@ -101,7 +110,7 @@ export class AddEventModal extends Modal {
 						title: titleValue,
 						content: toBeWrittenWholeContent,
 					};
-					console.log("New Event:", newEvent);
+
 					this.onSubmit(newEvent);
 					this.close();
 				})
@@ -123,7 +132,6 @@ export class AddEventModal extends Modal {
 						/```timeline[\s\S]*?```/g
 					);
 					if (!timelineBlocks || timelineBlocks.length === 0) {
-						console.error("No timeline blocks found");
 						return;
 					}
 
@@ -143,14 +151,17 @@ ${newEventContent}
 					this.app.vault.modify(file, updatedContent);
 				})
 				.catch((err) => {
-					console.error("Error reading file:", err);
+					// Silent error handling for file operations
 				});
 		} else {
-			console.error("No active file found");
+			// No active file found - silent handling
 		}
 	}
 }
 
+/**
+ * Button component for adding new timeline events
+ */
 export class TimelineAddButton {
 	private addButton: HTMLButtonElement;
 
@@ -160,6 +171,19 @@ export class TimelineAddButton {
 		private onAddEvent: (event: TimelineEvent) => void,
 		private getExistingEventsContent: () => string
 	) {
+		if (!container || !(container instanceof HTMLElement)) {
+			throw new Error('container must be a valid HTMLElement');
+		}
+		if (!app) {
+			throw new Error('app must be provided');
+		}
+		if (!onAddEvent || typeof onAddEvent !== 'function') {
+			throw new Error('onAddEvent must be a valid function');
+		}
+		if (!getExistingEventsContent || typeof getExistingEventsContent !== 'function') {
+			throw new Error('getExistingEventsContent must be a valid function');
+		}
+		
 		this.initializeAddButton();
 	}
 

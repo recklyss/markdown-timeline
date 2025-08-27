@@ -4,6 +4,9 @@ import { TimelineEvent } from "../types";
 import { setIcon } from "obsidian";
 import { sortTimelineEvents } from "../utils/dateUtils";
 
+/**
+ * Component for toggling timeline sort order
+ */
 export class TimelineOrderToggle {
     private orderButton: HTMLButtonElement;
     private currentOrder: typeof TIMELINE_ORDER.ASC | typeof TIMELINE_ORDER.DESC;
@@ -13,6 +16,16 @@ export class TimelineOrderToggle {
         initialOrder: typeof TIMELINE_ORDER.ASC | typeof TIMELINE_ORDER.DESC,
         private onOrderChange: (order: typeof TIMELINE_ORDER.ASC | typeof TIMELINE_ORDER.DESC) => void
     ) {
+        if (!container || !(container instanceof HTMLElement)) {
+            throw new Error('container must be a valid HTMLElement');
+        }
+        if (!Object.values(TIMELINE_ORDER).includes(initialOrder)) {
+            throw new Error('initialOrder must be a valid timeline order');
+        }
+        if (!onOrderChange || typeof onOrderChange !== 'function') {
+            throw new Error('onOrderChange must be a valid function');
+        }
+        
         this.currentOrder = initialOrder;
         this.initializeOrderToggle();
     }
