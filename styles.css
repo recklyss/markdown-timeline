@@ -7,32 +7,82 @@ If your plugin does not need CSS, delete this file.
 
 */
 
+/* ==========================================================================
+   CSS Custom Properties (Variables)
+   ========================================================================== */
+:root {
+	/* Spacing System */
+	--timeline-spacing-xs: 4px;
+	--timeline-spacing-sm: 8px;
+	--timeline-spacing-md: 12px;
+	--timeline-spacing-lg: 16px;
+	--timeline-spacing-xl: 20px;
+	--timeline-spacing-2xl: 24px;
+	--timeline-spacing-3xl: 32px;
+	
+	/* Border Radius */
+	--timeline-radius-sm: 4px;
+	--timeline-radius-md: 8px;
+	
+	/* Timeline Dimensions */
+	--timeline-line-width-desktop: 4px;
+	--timeline-line-width-tablet: 3px;
+	--timeline-line-width-mobile: 2px;
+	--timeline-line-width-small: 1px;
+	
+	--timeline-point-size-desktop: 16px;
+	--timeline-point-size-tablet: 12px;
+	--timeline-point-size-mobile: 10px;
+	--timeline-point-size-small: 8px;
+	
+	/* Layout Positions */
+	--timeline-line-left-desktop: 120px;
+	--timeline-line-left-tablet: 16px;
+	--timeline-line-left-mobile: 12px;
+	--timeline-line-left-small: 8px;
+	
+	/* Search Input Sizes */
+	--search-width-desktop: 280px;
+	--search-width-tablet: 200px;
+	--search-width-mobile: 150px;
+	--search-width-small: 120px;
+	
+	/* Button Sizes */
+	--button-padding-desktop: 4px;
+	--button-padding-tablet: 6px;
+	--button-padding-mobile: 6px;
+}
+
+/* ==========================================================================
+   Base Timeline Layout
+   ========================================================================== */
+
 .timeline-container {
-	padding: 8px;
+	padding: var(--timeline-spacing-sm);
 	max-width: 1000px;
 	margin: 0;
 }
 
 .timeline {
 	position: relative;
-	padding: 20px 0;
+	padding: var(--timeline-spacing-xl) 0;
 	min-width: 440px;
 }
 
 .timeline::before {
 	content: "";
 	position: absolute;
-	left: 120px;
+	left: var(--timeline-line-left-desktop);
 	top: 0;
 	bottom: 0;
-	width: 4px;
+	width: var(--timeline-line-width-desktop);
 	background: var(--background-secondary);
 }
 
 .timeline-event {
 	position: relative;
-	margin-bottom: 24px;
-	padding-left: 120px;
+	margin-bottom: var(--timeline-spacing-2xl);
+	padding-left: var(--timeline-line-left-desktop);
 	min-width: 0;
 }
 
@@ -57,9 +107,9 @@ If your plugin does not need CSS, delete this file.
 
 .timeline-point {
 	position: absolute;
-	left: 114px;
-	width: 16px;
-	height: 16px;
+	left: calc(var(--timeline-line-left-desktop) - 6px);
+	width: var(--timeline-point-size-desktop);
+	height: var(--timeline-point-size-desktop);
 	border-radius: 50%;
 	background: var(--interactive-accent);
 	z-index: 1;
@@ -67,9 +117,9 @@ If your plugin does not need CSS, delete this file.
 
 .timeline-content {
 	background: var(--background-primary-alt);
-	border-radius: 4px;
+	border-radius: var(--timeline-radius-sm);
 	padding: 15px;
-	margin-left: 20px;
+	margin-left: var(--timeline-spacing-xl);
 	overflow-wrap: break-word;
 }
 
@@ -124,18 +174,18 @@ If your plugin does not need CSS, delete this file.
 	display: flex;
 	justify-content: flex-start;
 	align-items: center;
-	gap: 8px;
-	padding: 8px 0;
+	gap: var(--timeline-spacing-sm);
+	padding: var(--timeline-spacing-sm) 0;
 	border-bottom: 1px solid var(--background-modifier-border);
 }
 
 .timeline-order-toggle {
 	background: transparent;
 	border: none;
-	padding: 4px;
+	padding: var(--button-padding-desktop);
 	cursor: pointer;
 	color: var(--text-muted);
-	border-radius: 4px;
+	border-radius: var(--timeline-radius-sm);
 }
 
 .timeline-order-toggle:hover {
@@ -154,11 +204,11 @@ If your plugin does not need CSS, delete this file.
 }
 
 .timeline-search {
-	width: 280px;
+	width: var(--search-width-desktop);
 	flex: none;
-	padding: 4px 8px;
+	padding: var(--timeline-spacing-xs) var(--timeline-spacing-sm);
 	border: 1px solid var(--background-modifier-border);
-	border-radius: 4px;
+	border-radius: var(--timeline-radius-sm);
 	background-color: var(--background-primary);
 	color: var(--text-normal);
 	font-size: 14px;
@@ -176,10 +226,10 @@ If your plugin does not need CSS, delete this file.
 .timeline-search-button {
 	background: transparent;
 	border: none;
-	padding: 4px;
+	padding: var(--button-padding-desktop);
 	cursor: pointer;
 	color: var(--text-muted);
-	border-radius: 4px;
+	border-radius: var(--timeline-radius-sm);
 }
 
 .timeline-search-button:hover {
@@ -187,11 +237,28 @@ If your plugin does not need CSS, delete this file.
 	background-color: var(--background-modifier-hover);
 }
 
+.timeline-add-button {
+	background: transparent;
+	border: none;
+	padding: var(--button-padding-desktop);
+	cursor: pointer;
+	color: var(--text-muted);
+	border-radius: var(--timeline-radius-sm);
+	display: flex;
+	align-items: center;
+	gap: var(--timeline-spacing-xs);
+}
+
+.timeline-add-button:hover {
+	color: var(--text-normal);
+	background-color: var(--background-modifier-hover);
+}
+
 .timeline-error {
 	background-color: var(--background-modifier-error-rgb);
-	border-radius: 8px;
-	padding: 16px;
-	margin: 16px 0;
+	border-radius: var(--timeline-radius-md);
+	padding: var(--timeline-spacing-lg);
+	margin: var(--timeline-spacing-lg) 0;
 	color: var(--text-normal);
 	border: 1px solid var(--background-modifier-border);
 }
@@ -199,8 +266,8 @@ If your plugin does not need CSS, delete this file.
 .timeline-error-header {
 	display: flex;
 	align-items: center;
-	gap: 8px;
-	margin-bottom: 12px;
+	gap: var(--timeline-spacing-sm);
+	margin-bottom: var(--timeline-spacing-md);
 }
 
 .timeline-error-header .lucide-alert-triangle {
@@ -213,15 +280,15 @@ If your plugin does not need CSS, delete this file.
 }
 
 .timeline-error-details {
-	margin-bottom: 12px;
-	padding: 8px;
+	margin-bottom: var(--timeline-spacing-md);
+	padding: var(--timeline-spacing-sm);
 	background-color: var(--background-secondary);
-	border-radius: 4px;
+	border-radius: var(--timeline-radius-sm);
 	color: var(--text-muted);
 }
 
 .timeline-error-line {
-	margin-top: 4px;
+	margin-top: var(--timeline-spacing-xs);
 	font-family: var(--font-monospace);
 	font-size: 0.9em;
 	opacity: 0.8;
@@ -229,19 +296,235 @@ If your plugin does not need CSS, delete this file.
 }
 
 .timeline-error-help {
-	margin-top: 16px;
-	padding-top: 12px;
+	margin-top: var(--timeline-spacing-lg);
+	padding-top: var(--timeline-spacing-md);
 	border-top: 1px solid var(--background-modifier-border);
 	color: var(--text-muted);
 }
 
 .timeline-error-example {
-	margin-top: 8px;
-	padding: 12px;
+	margin-top: var(--timeline-spacing-sm);
+	padding: var(--timeline-spacing-md);
 	background-color: var(--background-primary);
-	border-radius: 4px;
+	border-radius: var(--timeline-radius-sm);
 	font-family: var(--font-monospace);
 	font-size: 0.9em;
 	color: var(--text-normal);
 	border: 1px solid var(--background-modifier-border);
+}
+
+/* ==========================================================================
+   Mobile Responsive Design (≤768px)
+   ========================================================================== */
+
+@media (max-width: 768px) {
+	/* Container and Timeline */
+	.timeline-container {
+		padding: var(--timeline-spacing-xs);
+		max-width: 100%;
+	}
+	
+	.timeline {
+		min-width: auto;
+		padding: 10px 0;
+	}
+	
+	.timeline::before {
+		left: var(--timeline-line-left-tablet);
+		width: var(--timeline-line-width-tablet);
+	}
+	
+	/* Timeline Events */
+	.timeline-event {
+		padding-left: 0;
+		margin-bottom: var(--timeline-spacing-xl);
+	}
+	
+	.timeline-date-point {
+		position: static;
+		display: block;
+		height: auto;
+		width: auto;
+		margin-bottom: var(--timeline-spacing-sm);
+		margin-left: var(--timeline-spacing-3xl);
+		text-align: left;
+	}
+	
+	.timeline-date {
+		text-align: left;
+		font-size: 0.85em;
+		font-weight: 500;
+		color: var(--text-accent);
+		margin-bottom: var(--timeline-spacing-xs);
+	}
+	
+	.timeline-point {
+		position: absolute;
+		left: calc(var(--timeline-line-left-tablet) - 4px);
+		top: 4px;
+		width: var(--timeline-point-size-tablet);
+		height: var(--timeline-point-size-tablet);
+	}
+	
+	.timeline-content {
+		margin-left: var(--timeline-spacing-3xl);
+		padding: var(--timeline-spacing-md);
+		border-left: 3px solid var(--interactive-accent);
+	}
+	
+	/* Header and Controls */
+	.timeline-header {
+		flex-direction: row;
+		align-items: center;
+		gap: var(--timeline-spacing-sm);
+		padding: var(--timeline-spacing-md) 0;
+		flex-wrap: wrap;
+	}
+	
+	.timeline-search {
+		flex: 1;
+		min-width: var(--search-width-mobile);
+		max-width: 250px;
+	}
+	
+	.timeline-order-toggle {
+		align-self: flex-start;
+	}
+	
+	/* Buttons */
+	.timeline-add-button {
+		width: auto;
+		justify-content: center;
+		padding: var(--button-padding-tablet) var(--timeline-spacing-md);
+		font-size: 13px;
+		flex-shrink: 0;
+	}
+	
+	.timeline-search-button {
+		padding: var(--button-padding-tablet);
+		flex-shrink: 0;
+	}
+	
+	.timeline-order-toggle {
+		padding: var(--button-padding-tablet);
+		flex-shrink: 0;
+	}
+	
+	/* Touch Interactions */
+	.timeline-add-button:hover,
+	.timeline-search-button:hover,
+	.timeline-order-toggle:hover {
+		background-color: var(--background-modifier-hover);
+	}
+	
+	.timeline-content {
+		cursor: pointer;
+		transition: background-color 0.2s ease;
+	}
+	
+	.timeline-content:active {
+		background-color: var(--background-modifier-hover);
+	}
+	
+	/* Responsive Scaling for Smaller Screens */
+	@media (max-width: 480px) {
+		.timeline-container {
+			padding: 2px;
+		}
+		
+		.timeline {
+			padding: var(--timeline-spacing-sm) 0;
+		}
+		
+		.timeline::before {
+			left: var(--timeline-line-left-mobile);
+			width: var(--timeline-line-width-mobile);
+		}
+		
+		.timeline-point {
+			left: calc(var(--timeline-line-left-mobile) - 4px);
+			width: var(--timeline-point-size-mobile);
+			height: var(--timeline-point-size-mobile);
+		}
+		
+		.timeline-date-point {
+			margin-left: var(--timeline-spacing-2xl);
+		}
+		
+		.timeline-content {
+			margin-left: var(--timeline-spacing-2xl);
+			padding: 10px;
+			font-size: 0.9em;
+		}
+		
+		.timeline-content h3 {
+			font-size: 1.1em;
+			margin-bottom: var(--timeline-spacing-sm);
+		}
+		
+		.timeline-date {
+			font-size: 0.8em;
+		}
+		
+		.timeline-header {
+			gap: 6px;
+			padding: var(--timeline-spacing-sm) 0;
+		}
+		
+		.timeline-search {
+			min-width: var(--search-width-small);
+			max-width: 180px;
+		}
+	}
+	
+	/* Very Small Screens */
+	@media (max-width: 320px) {
+		.timeline-container {
+			padding: 1px;
+		}
+		
+		.timeline {
+			padding: 5px 0;
+		}
+		
+		.timeline::before {
+			left: 8px;
+			width: 1px;
+		}
+		
+		.timeline-point {
+			left: calc(8px - 4px);
+			top: 4px;
+			width: 8px;
+			height: 8px;
+		}
+		
+		.timeline-content {
+			padding: 8px;
+			font-size: 0.85em;
+		}
+		
+		.timeline-date {
+			font-size: 0.75em;
+		}
+		
+		.timeline-date-point {
+			margin-left: 16px;
+		}
+		
+		.timeline-content {
+			margin-left: 16px;
+		}
+	}
+	
+	/* Landscape Orientation */
+	@media (orientation: landscape) {
+		.timeline-header {
+			gap: 8px;
+		}
+		
+		.timeline-search {
+			width: 200px;
+		}
+	}
 }
