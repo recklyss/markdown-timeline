@@ -2,6 +2,8 @@
 
 A plugin for [Obsidian](https://obsidian.md) that creates a timeline view of your notes.
 
+![markdown timeline](https://cdn.jsdelivr.net/gh/recklyss/FigureCloud@master/uPic/myyczu.jpg)
+
 ## Features
 
 - Create beautiful timelines from your markdown notes

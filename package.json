@@ -1,6 +1,6 @@
 {
 	"name": "markdown-timeline",
-	"version": "0.0.5",
+	"version": "0.0.6",
 	"description": "Convert markdown into timeline visualization",
 	"main": "main.js",
 	"scripts": {
